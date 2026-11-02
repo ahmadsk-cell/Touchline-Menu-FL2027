@@ -1,0 +1,66 @@
+{
+  "version": "2.0.0",
+  "target_game": "SP Football Life 2027",
+  "date": "2026-11-02",
+  "source_release": "Touchline Menu 1.1.6",
+  "executable": {
+    "file_version": "27.0.0.0",
+    "installed_game_version": "27.1.0",
+    "sha256": "327c6df6c485f4993111f3dbb84315b49447aba5b120caf4267d7a0324983454",
+    "palette_signature": "101010ffffffffff004493ff",
+    "palette_signature_matches": 1,
+    "palette_rva": "0x34c08d0",
+    "startup_movie": "movie/intro/FL2027.usm"
+  },
+  "native_assets": {
+    "title_layout_byte_identical_to_fl2026": true,
+    "title_layout_sha256": "e2321ea64cd659b5641f58d695d823eba23ca10151175e74304a8d4f7e7d266f",
+    "theme_assets_retained_from_source_release": 153,
+    "intro_renamed_without_reencoding": true,
+    "external_menu_pack_required": false
+  },
+  "installer_tests": {
+    "passed": 7,
+    "stock_palette_conflict_disabled_and_restored": true,
+    "unsupported_executable_rejected_before_target_writes": true,
+    "backup_and_uninstall_verified": true,
+    "corrupt_payload_rejected": true
+  },
+  "color_runtime_test": {
+    "engine": "LuaJIT 2.1",
+    "mock_memory_only": true,
+    "palette_init_and_reload_exact": true
+  },
+  "in_game": {
+    "status": "subset_verified",
+    "screens_checked": [
+      "Title screen: full-screen alignment",
+      "Portrait main menu",
+      "Master League load list",
+      "Information background and loading dialog",
+      "Master League Game Plan screen"
+    ],
+    "color_module_initialized_in_live_fl2027": true,
+    "palette_patch_completed": true,
+    "final_english_table_validation": "All 16479 records parsed; 16478 unchanged from native FL 2027; one spelling correction",
+    "intro_movie_playback": "Not fully observed; filename verified against executable and CPK",
+    "startup_note": "Launch through the normal FL 2027 shortcut with Sider active.",
+    "final_normal_launcher_startup_verified": true,
+    "final_native_version_label": "Game Version: 1.0",
+    "title_screenshot": "docs/images/title-fl2027.png"
+  },
+  "limitations": [
+    "Additional menu servers and competition-specific themes need their own compatibility checks.",
+    "The full set of competition screens and career actions is not exhaustively exercised."
+  ],
+  "legacy_asset_validation": "docs/FL2026-VERIFICATION.json",
+  "english_strings": {
+    "source": "FL 2027 dt20_eng_x64.cpk: eng/string/all.str",
+    "source_sha256": "7df95009963102bb3285bbe234d84e3acb045b6d0891c57eb7f0a24e00ebbd24",
+    "output_sha256": "d88738c8a6bb711d772211ab9a041f452a6f0945f392924695f2b6d97f5dfa4c",
+    "records_preserved": 16478,
+    "records_changed": 1,
+    "change": "Choose Sqad Type -> Choose Squad Type",
+    "all_other_records_byte_exact": true
+  }
+}

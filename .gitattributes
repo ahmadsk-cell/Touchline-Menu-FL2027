@@ -1,0 +1,13 @@
+*.bin binary
+*.usm binary
+*.str binary
+*.png binary
+*.zip binary
+content/touchline-menu/* -text -diff
+modules/TouchlineMenuColors.lua -text whitespace=-blank-at-eol,-blank-at-eof
+*.ps1 text eol=crlf
+*.cmd text eol=crlf
+*.md text eol=lf
+*.py text eol=lf
+*.json text eol=lf
+*.svg text eol=lf

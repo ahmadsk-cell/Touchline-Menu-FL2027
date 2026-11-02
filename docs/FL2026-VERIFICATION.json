@@ -1,0 +1,154 @@
+{
+  "version": "1.1.6",
+  "game_asset_count": 155,
+  "bundled_runtime_and_config_count": 3,
+  "effective_asset_snapshot_matches_author_installation": true,
+  "external_menu_packs_required": [],
+  "schedule_and_text_input_preserved": true,
+  "obsolete_teamPower_override_excluded": true,
+  "runtime_scope": "Only the Staff Report panel textures and title tints changed. Banner art, actions and animations are unchanged. Restart required for in-game confirmation.",
+  "installer_tests": {
+    "passed": 5,
+    "clean_sider_without_external_packs": true,
+    "legacy_entries_disabled_and_restore_verified": true,
+    "later_edits_and_unknown_overrides_protected": true,
+    "corrupt_download_rejected": true
+  },
+  "color_runtime_test": {
+    "engine": "LuaJIT 2.1",
+    "mock_memory_only": true,
+    "palette_initialization_and_reload_exact": true,
+    "commonlib_or_external_menu_mods_needed": false
+  },
+  "main_menu_icon_swap": {
+    "version": "1.1.2",
+    "path": "common/menu/general/topModeSelectDMM.bin",
+    "before_sha256": "d9cb4487fd82548fe0667d30a47ec6a4ed1a73da745544e052666ef8837974fe",
+    "after_sha256": "3d75b5d44b6e8826da0f8a6fda696b9a0217667bb112cdbce552fcee965331b9",
+    "scene_count": 7,
+    "changed_icon_regions": 14,
+    "changes_limited_to_myclub_gallery_icons": true,
+    "all_native_metadata_byte_exact": true,
+    "roundtrip_pixel_exact": true,
+    "runtime": "Requires restart and in-game visual confirmation."
+  },
+  "career_icons": {
+    "version": "1.1.3",
+    "icons": 6,
+    "files": [
+      {
+        "path": "common/menu/general/managerHistory.bin",
+        "live_override_existed": true,
+        "before_sha256": "b7930b7886b98481d6c71044ff4a77573c48f948bae85f238a5acb7cacf04da2",
+        "after_sha256": "0c62a5bc8b84ea3d07ff9884bfad513dd7a92232d69e589a1b844d6c53ca38d6",
+        "tint_fields": [
+          {
+            "field": "multiply",
+            "offset": 10836,
+            "frame": "frame_0"
+          },
+          {
+            "field": "multiply",
+            "offset": 10932,
+            "frame": "frame_3"
+          },
+          {
+            "field": "add",
+            "offset": 10936,
+            "frame": "frame_3"
+          }
+        ],
+        "outside_icon_regions_pixel_exact": true,
+        "native_structure_preserved": true,
+        "roundtrip_pixel_exact": true
+      },
+      {
+        "path": "common/menu/general/offerList.bin",
+        "live_override_existed": false,
+        "before_sha256": "ea23571bb441238a5ab25ebab6e77904bfbd1658e890be988f27b0b23712016c",
+        "after_sha256": "8e580b534faee4d7d35c792cea55f1c7b0d742859a5ebbdbb88803dd4e46d775",
+        "tint_fields": [],
+        "outside_icon_regions_pixel_exact": true,
+        "native_structure_preserved": true,
+        "roundtrip_pixel_exact": true
+      }
+    ],
+    "runtime": "Decoded previews checked; in-game confirmation requires restart."
+  },
+  "management_career_panels": {
+    "version": "1.1.4",
+    "panels": [
+      {
+        "region": "managerHistory-menuPlateL-0",
+        "box": [
+          0,
+          0,
+          705,
+          390
+        ],
+        "color": "#10181e"
+      },
+      {
+        "region": "managerHistory-menuPlateL-1",
+        "box": [
+          0,
+          392,
+          705,
+          782
+        ],
+        "color": "#292d2c"
+      }
+    ],
+    "panel_alpha_unchanged": true,
+    "icon_pixels_unchanged": true,
+    "all_native_metadata_byte_exact": true,
+    "files": [
+      {
+        "path": "common/menu/general/managerHistory.bin",
+        "live_override_existed": true,
+        "before_sha256": "0c62a5bc8b84ea3d07ff9884bfad513dd7a92232d69e589a1b844d6c53ca38d6",
+        "after_sha256": "45f21e944005a7b236f35602006bc9c61a45540e57ddafa69c9af1be4ed656bb"
+      }
+    ],
+    "runtime": "Decoded panel states checked; in-game confirmation requires restart."
+  },
+  "career_icon_mapping_correction": {
+    "version": "1.1.5",
+    "only_two_icon_region_records_changed": true,
+    "all_texture_pixels_unchanged": true,
+    "dark_panels_preserved": true,
+    "native_actions_and_animations_unchanged": true,
+    "files": [
+      {
+        "path": "common/menu/general/managerHistory.bin",
+        "live_override_existed": true,
+        "before_sha256": "45f21e944005a7b236f35602006bc9c61a45540e57ddafa69c9af1be4ed656bb",
+        "after_sha256": "fd00fffe55da17770dd4f7a4421a944916af565e294b027ff6806c13497a11f9"
+      }
+    ],
+    "runtime": "Icon mapping verified; restart required for in-game confirmation."
+  },
+  "staff_report_readability": {
+    "version": "1.1.6",
+    "panel": "#10171b",
+    "border_and_title": "#c3a46c",
+    "only_panel_texture_and_title_tint_changed": true,
+    "banner_texture_unchanged": true,
+    "native_actions_and_animations_unchanged": true,
+    "files": [
+      {
+        "path": "common/menu/general/staffReport.bin",
+        "live_override_existed": false,
+        "before_sha256": "e2127b6dbcd1232e8d8c63d75078f021fa1f0bf197f0721987d3a368562cfa96",
+        "after_sha256": "2b3252380c3272a0aa3cb4d9922ec98d1662354d6efbc920183e931f5760b63d"
+      },
+      {
+        "path": "common/menu/general/staffReportDialog.bin",
+        "live_override_existed": false,
+        "before_sha256": "6864561404c2af5c4df8286641299f43df6a2cb890e586bec6acb53aa3a3b7d7",
+        "after_sha256": "4c6621692b63f7f881f44662be125239986f304d318ae0c37ba9f798c9c17166"
+      }
+    ],
+    "runtime": "Decoded panels and title tint checked; restart required for in-game confirmation."
+  }
+}
