@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.2.0 — FL 2027
+
+- Added a player-focused Become a Legend dashboard with My Data and Career Records in the top bar.
+- Added Next Match, Skip Match, Schedule and Top Transfer shortcuts. Match shortcuts respect the native availability checks, and the selected match button uses the Standings pulse.
+- Removed the club-color bar behind the badge. Followers and sponsors have separate space, and follower counts have room for millions.
+- Kept standings on the right and streamlined the schedule at the bottom to show competition and club badges, dates, and scores or kickoff times.
+- Top Transfer uses the career's currency and highest recorded fee for the active transfer window.
+
 ## 2.1.0 — FL 2027 — 2026-11-15
 
 - Bundled the tested Touchline Master League Dashboard 1.2.23 into the full theme and installer.

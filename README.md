@@ -6,13 +6,15 @@ A standalone charcoal, silver and champagne menu mod for **SP Football Life 2027
 
 ![Touchline Master League dashboard in an FC Lorient career](docs/images/master-league-dashboard.jpg)
 
+![Touchline Become a Legend dashboard in a Dijon FCO career](docs/images/become-a-legend-dashboard.jpg)
+
 ![Touchline main-menu scene](docs/images/main-menu.png)
 
 ## Included
 
 - Master League dashboard with six tabs, aligned dropdowns, Play Match, Skip Match, Coach Mode, a five-day fixture calendar, standings, top scorers and live news.
 - Career cards for the highest observed transfer fee in the active window, training, notifications, youth, followers and Favourite Players. The Favourite Players card shows the selected player’s name and opens the native list.
-- A separate Touchline-styled Become a Legend menu with the game's own layout and navigation.
+- A dedicated Become a Legend dashboard with direct My Data and Career Records tabs, native match and skip actions, a Player Journal, standings, schedule, followers with the club crest, and Top Transfer.
 - Main menu ordered as Kick-off, Master League, Become a Legend, MyClub, Gallery, Music & Audio, Settings.
 - Seven portrait scenes and short introductions for Master League and Become a Legend.
 - Dark information backgrounds with subtle smoke, fine gold lines and BootShapes branding.
@@ -37,7 +39,7 @@ Touchline and Prologue gameplay and story systems are separate projects. No exte
 ## Installation
 
 1. Close Football Life and Sider.
-2. Download **Touchline-Menu-FL2027-v2.1.0.zip** from [GitHub Releases](https://github.com/ahmadsk-cell/Touchline-Menu-FL2027/releases/latest) and extract it completely.
+2. Download **Touchline-Menu-FL2027-v2.2.0.zip** from [GitHub Releases](https://github.com/ahmadsk-cell/Touchline-Menu-FL2027/releases/latest) and extract it completely.
 3. Double-click **Install.cmd** and enter the full path to your **SiderAddons** folder, the folder containing `sider.ini`.
 4. Start Sider and Football Life again.
 
@@ -52,6 +54,8 @@ Replace the example path with your installation. Administrator privileges are no
 The installer verifies the package, backs up affected files and enables the `TouchlinePrologue2` LiveCPK root, the dashboard and the color module. It enables Sider's LuaJIT extensions and replaces any active dashboard preview or `MLMenuLayoutTrial.lua` entry. Uninstall restores the previous configuration.
 
 To use the theme with the stock career layout, close Sider and the game, then comment out `lua.module = "TouchlineMLDashboard.lua"` in `sider.ini`.
+
+In Become a Legend, open **Team Info → Player Menu** for the original training, messages and player requests, or **System → Forward Time** for the original time controls.
 
 When upgrading an existing setup, the installer comments out the old MenuC1987, UIColors and TouchlinePrologue roots and the separate `UIColors.lua` module to avoid duplicate menu/palette loading. Their files remain on disk, and uninstall restores the original settings. The stock `switcher\SPcolor.lua` module is also commented out because it overwrites four entries of the theme palette. Its file stays installed, and uninstall restores the original configuration. Other Sider settings, mods and saves are preserved.
 

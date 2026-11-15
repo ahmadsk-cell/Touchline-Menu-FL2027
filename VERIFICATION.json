@@ -1,8 +1,8 @@
 {
-  "version": "2.1.0",
+  "version": "2.2.0",
   "target_game": "SP Football Life 2027",
   "date": "2026-11-15",
-  "source_release": "Touchline Menu FL 2027 2.0.0 and Touchline Master League Dashboard 1.2.23",
+  "source_release": "Touchline Menu FL 2027 2.1.0 and Touchline career dashboards 1.2.29",
   "executable": {
     "file_version": "27.0.0.0",
     "installed_game_version": "27.1.0",
@@ -65,9 +65,9 @@
     "all_other_records_byte_exact": true
   },
   "dashboard": {
-    "version": "1.2.23",
+    "version": "1.2.29",
     "sider_version_tested": "7.3.3",
-    "mock_runtime_executable_reads": 87,
+    "mock_runtime_executable_reads": 100,
     "installed_payload_files_matching_release": 164,
     "live_checks": [
       "FC Lorient Master League dashboard and Yoann Gourcuff name with crown",
@@ -76,5 +76,26 @@
       "Stock Become a Legend navigation and subsequent Master League entry on dashboard 1.2.21"
     ],
     "screenshot": "docs/images/master-league-dashboard.jpg"
+  },
+  "become_a_legend": {
+    "asset_and_emulated_routes": "passed",
+    "in_game_rendering": "Dashboard 1.2.29 loaded successfully in FL 2027",
+    "verified_native_routes": [
+      "My Data",
+      "Career Records",
+      "Next Match",
+      "Skip Match",
+      "Top Transfer",
+      "Schedule"
+    ],
+    "verified_mode_switches": [
+      "BAL to Master League",
+      "Master League to BAL",
+      "Career to main menu"
+    ],
+    "live_activation": "Logged BAL controls mounted and visual asset applied after switching from Master League",
+    "live_shortcut_walkthrough": "My Data, Career Records, Top Transfer and Schedule were verified in the BAL save",
+    "skip_match_focus": "Directional routes tested in emulation and Standings-style focus pulse confirmed in game",
+    "screenshot": "docs/images/become-a-legend-dashboard.jpg"
   }
 }

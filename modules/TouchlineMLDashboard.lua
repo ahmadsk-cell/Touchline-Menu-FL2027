@@ -1,5 +1,5 @@
 -- Touchline skin of the supplied MLMenuLayoutTrial v0.80 dashboard.
-local m={version="1.2.23-touchline"}
+local m={version="1.2.29-touchline"}
 local base,k,control,casfn,stats_state
 local frame=0
 local attempted=false
@@ -23,14 +23,20 @@ local function is_asset(filename)
  return filename:lower():gsub("/","\\")=="common\\menu\\general\\modemainmenufl.bin"
 end
 local career_mode, bal_visual_path
+local mount_bal_dashboard, bal_visual_ready, bal_mode_left, bal_resource_tick
+local bal_focus_jump, bal_focus_tail, ml_focus_jump, ml_focus_target
+local direction_commit = 0xE3B00A
+local direction_bytes = "\xe8\xc1\x4e\x00\x00\x0f\x28\xdf\x0f\x28\xd7\xb2\x01\x49\x8b\xcc"
 function m.get_filepath(ctx,filename)
  if type(filename)~="string" then return end
  local name=filename:lower():gsub("/","\\")
+ local previous_mode=career_mode
  local ml_home=name=="common\\script\\flow\\ml\\mlmainmanu.json"
  if ml_home then
   career_mode="ml"
  elseif name=="common\\script\\flow\\bl\\blmainmenu.json" then
   career_mode="bal"
+  if bal_visual_path and not mount_bal_dashboard() then bal_visual_path=nil end
  elseif name:find("common\\script\\flow\\topmenu\\",1,true)==1
  or name:find("common\\script\\flow\\league\\",1,true)==1
  or name:find("common\\script\\flow\\compe\\",1,true)==1 then
@@ -40,8 +46,10 @@ function m.get_filepath(ctx,filename)
   if control then memory.write(control+8,memory.pack("u32",0)) end
   if stats_state then memory.write(stats_state+64,memory.pack("u32",0)) end
  end
+ if previous_mode=="bal" and career_mode~="bal" then bal_mode_left() end
  ml_session=career_mode=="ml"
  if career_mode=="bal" and is_asset(filename) then return bal_visual_path end
+ if career_mode=="bal" then bal_resource_tick() end
  if not ml_session or not k or not visual then return end
  if ml_home and not attempted then frame=119;m.resource_tick(ctx) end
  if not installed then return end
@@ -368,7 +376,7 @@ local function compact_name(address, length)
     if name ~= "" and not name:find("[%c]") then return name end
 end
 
-local function set_card(index, value)
+local function write_card_text(destination, value)
     local length = math.min(#value, 47)
     -- Each native text field has a 48-byte slot.
     while length > 0 do
@@ -376,7 +384,11 @@ local function set_card(index, value)
         if not following or following < 128 or following >= 192 then break end
         length = length - 1
     end
-    memory.write(card_strings + index * 48, value:sub(1, length) .. "\0")
+    memory.write(destination, value:sub(1, length) .. "\0")
+end
+
+local function set_card(index, value)
+    write_card_text(card_strings + index * 48, value)
 end
 
 local function club_name(career, identity, short)
@@ -443,6 +455,31 @@ local function transfer_window(date)
     local year, month = math.floor(date / 10000), math.floor(date / 100) % 100
     if month >= 7 then return year * 10000 + 701, year * 10000 + 831 end
     return year * 10000 + 101, year * 10000 + 131
+end
+
+local function transfer_card(career, data, best, start)
+    local start_date, end_date = transfer_window(data.date)
+    if start_date ~= start or best and best.date > data.date then
+        best = nil
+    end
+    for _, transfer in ipairs(transfer_market.window_prices(data.rows, start_date, end_date)) do
+        if transfer.fee >= 0 then
+            if not best or transfer.fee > best.fee then best = transfer end
+            break
+        end
+    end
+    if not best then return nil, start_date, "No transfers", "", "", 0, 0 end
+
+    local address = career + best.player_slot * 0x17c
+    local player_name
+    if best.player_slot <= 30000 and u32_at(address + 0x30) == best.player_id then
+        player_name = compact_name(address + 0x38, 0x75 - 0x38)
+    end
+    local from_club = club_name(career, best.from_identity, true)
+    local to_club = club_name(career, best.to_identity, true)
+    return best, start_date, player_name or "Player " .. best.player_id,
+        to_club or "Club " .. best.to_team, transfer_market.display_fee(best.fee, data.currency),
+        from_club and best.from_identity or 0, to_club and best.to_identity or 0
 end
 
 local function training_summary(career, managed)
@@ -531,33 +568,153 @@ local function card_data_tick()
     end
     local data = transfer_market.snapshot(memory.read, base)
     if not data then return end
-    local start_date, end_date = transfer_window(data.date)
-    if start_date ~= window_start or window_best and window_best.date > data.date then
-        window_start, window_best = start_date, nil
-    end
-    local rows = transfer_market.window_prices(data.rows, start_date, end_date)
-    local row
-    for _, transfer in ipairs(rows) do
-        if transfer.fee >= 0 then row = transfer; break end
-    end
-    if row and (not window_best or row.fee > window_best.fee) then window_best = row end
-    local player, club, fee = "No transfers", "", ""
-    if window_best then
-        local address = career + window_best.player_slot * 0x17c
-        if window_best.player_slot <= 30000 and u32_at(address + 0x30) == window_best.player_id then
-            player = compact_name(address + 0x38, 0x75 - 0x38) or "Player " .. window_best.player_id
-        else
-            player = "Player " .. window_best.player_id
-        end
-        club = club_name(career, window_best.to_identity, true) or "Club " .. window_best.to_team
-        fee = transfer_market.display_fee(window_best.fee, data.currency)
-    end
+    local player, club, fee, from_crest, to_crest
+    window_best, window_start, player, club, fee, from_crest, to_crest =
+        transfer_card(career, data, window_best, window_start)
     set_card(5, player)
     set_card(6, club)
     set_card(7, fee)
-    local from_crest = window_best and club_name(career, window_best.from_identity, true) and window_best.from_identity or 0
-    local to_crest = window_best and club_name(career, window_best.to_identity, true) and window_best.to_identity or 0
     memory.write(card_crests + 6 * 4, memory.pack("u32", from_crest) .. memory.pack("u32", to_crest))
+end
+
+-- Keep BAL hooks in BAL's own controller tables. The ML hooks can coexist.
+local bal_control, bal_ready, bal_career, bal_window_start, bal_window_best
+local bal_reads = 0
+local bal_code = "\x53\x56\x57\x48\x83\xec\x60\x48\x89\xcf\x48\xbb\xbe\xbe\xbe\xbe\xbe\xbe\xbe\xbe\x48\xbe\xad\xad\xad\xad\xad\xad\xad\xad\x80\x3e\x01\x0f\x85\x11\x03\x00\x00\x48\x8b\x8f\x98\x00\x00\x00\x48\x85\xc9\x0f\x84\x01\x03\x00\x00\xb8\x90\xdc\xe3\x00\x48\x01\xd8\xff\xd0\x48\x85\xc0\x0f\x84\xee\x02\x00\x00\x48\x89\xc1\x48\x8d\x15\x0e\x06\x00\x00\xb8\xc0\x04\xe5\x00\x48\x01\xd8\xff\xd0\x48\x85\xc0\x0f\x84\xd1\x02\x00\x00\x48\x89\x44\x24\x30\x48\x8d\x15\xf6\x05\x00\x00\xe8\xd4\x02\x00\x00\x48\x85\xc0\x0f\x84\x79\x00\x00\x00\x48\x89\x44\x24\x38\x48\x8d\x96\x10\x00\x00\x00\x48\x89\x54\x24\x40\x48\xc7\x44\x24\x48\x00\x00\x00\x00\x31\xc9\x80\x3c\x0a\x00\x0f\x84\x0b\x00\x00\x00\xff\xc1\x83\xf9\x2f\x0f\x82\xeb\xff\xff\xff\x48\x89\x4c\x24\x50\x48\xc7\x44\x24\x58\x30\x00\x00\x00\x48\x89\xc1\x31\xd2\xb8\x70\x8b\xe4\x00\x48\x01\xd8\xff\xd0\x48\x8b\x4c\x24\x38\x48\x8d\x54\x24\x40\x45\x31\xc0\x45\x31\xc9\xb8\xf0\x8b\xe4\x00\x48\x01\xd8\xff\xd0\x48\x8b\x4c\x24\x38\x31\xd2\xb8\x50\x8a\xe4\x00\x48\x01\xd8\xff\xd0\x48\x8d\x15\x7c\x05\x00\x00\xe8\x46\x02\x00\x00\x48\x85\xc0\x0f\x84\x79\x00\x00\x00\x48\x89\x44\x24\x38\x48\x8d\x96\x40\x00\x00\x00\x48\x89\x54\x24\x40\x48\xc7\x44\x24\x48\x00\x00\x00\x00\x31\xc9\x80\x3c\x0a\x00\x0f\x84\x0b\x00\x00\x00\xff\xc1\x83\xf9\x2f\x0f\x82\xeb\xff\xff\xff\x48\x89\x4c\x24\x50\x48\xc7\x44\x24\x58\x30\x00\x00\x00\x48\x89\xc1\x31\xd2\xb8\x70\x8b\xe4\x00\x48\x01\xd8\xff\xd0\x48\x8b\x4c\x24\x38\x48\x8d\x54\x24\x40\x45\x31\xc0\x45\x31\xc9\xb8\xf0\x8b\xe4\x00\x48\x01\xd8\xff\xd0\x48\x8b\x4c\x24\x38\x31\xd2\xb8\x50\x8a\xe4\x00\x48\x01\xd8\xff\xd0\x48\x8d\x15\x00\x05\x00\x00\xe8\xb8\x01\x00\x00\x48\x85\xc0\x0f\x84\x79\x00\x00\x00\x48\x89\x44\x24\x38\x48\x8d\x96\x70\x00\x00\x00\x48\x89\x54\x24\x40\x48\xc7\x44\x24\x48\x00\x00\x00\x00\x31\xc9\x80\x3c\x0a\x00\x0f\x84\x0b\x00\x00\x00\xff\xc1\x83\xf9\x2f\x0f\x82\xeb\xff\xff\xff\x48\x89\x4c\x24\x50\x48\xc7\x44\x24\x58\x30\x00\x00\x00\x48\x89\xc1\x31\xd2\xb8\x70\x8b\xe4\x00\x48\x01\xd8\xff\xd0\x48\x8b\x4c\x24\x38\x48\x8d\x54\x24\x40\x45\x31\xc0\x45\x31\xc9\xb8\xf0\x8b\xe4\x00\x48\x01\xd8\xff\xd0\x48\x8b\x4c\x24\x38\x31\xd2\xb8\x50\x8a\xe4\x00\x48\x01\xd8\xff\xd0\x48\x8d\x15\x83\x04\x00\x00\xe8\x2a\x01\x00\x00\x48\x85\xc0\x0f\x84\x7c\x00\x00\x00\x48\x89\x44\x24\x38\x8b\x96\xa0\x00\x00\x00\x89\x54\x24\x40\x48\x89\xc1\x85\xd2\x0f\x95\xc2\x0f\xb6\xd2\x41\xb8\x02\x00\x00\x00\xb8\x40\xc2\xe4\x00\x48\x01\xd8\xff\xd0\x83\x7c\x24\x40\x00\x0f\x84\x47\x00\x00\x00\x48\x8b\x4c\x24\x38\x48\x8d\x54\x24\x40\xc7\x81\x9c\x00\x00\x00\x00\x00\x00\x00\x44\x8b\x81\xcc\x01\x00\x00\x45\x85\xc0\x41\x0f\x95\xc0\x31\xc0\x83\xb9\xd0\x01\x00\x00\x01\x0f\x94\xc0\x89\x44\x24\x28\xc6\x44\x24\x20\x00\x41\xb9\x05\x00\x00\x00\xb8\xa0\xcd\xe5\x00\x48\x01\xd8\xff\xd0\x48\x8d\x15\x04\x04\x00\x00\xe8\x99\x00\x00\x00\x48\x85\xc0\x0f\x84\x7c\x00\x00\x00\x48\x89\x44\x24\x38\x8b\x96\xa4\x00\x00\x00\x89\x54\x24\x40\x48\x89\xc1\x85\xd2\x0f\x95\xc2\x0f\xb6\xd2\x41\xb8\x02\x00\x00\x00\xb8\x40\xc2\xe4\x00\x48\x01\xd8\xff\xd0\x83\x7c\x24\x40\x00\x0f\x84\x47\x00\x00\x00\x48\x8b\x4c\x24\x38\x48\x8d\x54\x24\x40\xc7\x81\x9c\x00\x00\x00\x00\x00\x00\x00\x44\x8b\x81\xcc\x01\x00\x00\x45\x85\xc0\x41\x0f\x95\xc0\x31\xc0\x83\xb9\xd0\x01\x00\x00\x01\x0f\x94\xc0\x89\x44\x24\x28\xc6\x44\x24\x20\x00\x41\xb9\x05\x00\x00\x00\xb8\xa0\xcd\xe5\x00\x48\x01\xd8\xff\xd0\x48\x89\xf9\xb8\x10\xef\xe3\x00\x48\x01\xd8\x48\x83\xc4\x60\x5f\x5e\x5b\xff\xe0\x48\x8b\x4c\x24\x38\x48\x81\xc1\x98\x00\x00\x00\x48\x8b\x01\xff\x60\x08\x53\x56\x57\x48\x83\xec\x60\x48\x89\xcf\x48\xbb\xbe\xbe\xbe\xbe\xbe\xbe\xbe\xbe\x48\xbe\xad\xad\xad\xad\xad\xad\xad\xad\x48\x89\x54\x24\x30\x48\x85\xd2\x0f\x84\xe4\x01\x00\x00\x48\x39\x7a\x10\x0f\x85\xda\x01\x00\x00\x81\x7a\x08\x00\x70\x08\x01\x0f\x85\xcd\x01\x00\x00\xb8\x30\xd1\xe3\x00\x48\x01\xd8\xff\xd0\x89\x44\x24\x38\x48\x89\xf9\xb8\x20\xd1\xe3\x00\x48\x01\xd8\xff\xd0\x83\x7c\x24\x38\x01\x0f\x84\x40\x00\x00\x00\x83\x7c\x24\x38\x00\x0f\x85\x9c\x01\x00\x00\x48\x8b\x8f\x40\x07\x00\x00\x48\x85\xc9\x0f\x84\x8c\x01\x00\x00\x48\x8b\x51\x18\x48\x39\x51\x20\x0f\x85\x7e\x01\x00\x00\x83\xf8\x00\x0f\x84\x40\x00\x00\x00\x83\xf8\x01\x0f\x84\x44\x00\x00\x00\xe9\x67\x01\x00\x00\x80\x3e\x01\x0f\x85\x5e\x01\x00\x00\x83\xf8\x03\x0f\x84\x3a\x00\x00\x00\x83\xf8\x04\x0f\x84\x46\x00\x00\x00\x83\xf8\x05\x0f\x84\x52\x00\x00\x00\x83\xf8\x06\x0f\x84\x56\x00\x00\x00\xe9\x35\x01\x00\x00\xc7\x44\x24\x40\xcc\xa9\x6b\x02\xe9\xef\x00\x00\x00\xc7\x44\x24\x40\x38\xaa\x6b\x02\xe9\xe2\x00\x00\x00\xc7\x44\x24\x40\x88\xa7\x6b\x02\xc7\x44\x24\x44\x09\x00\x00\x00\xe9\x2f\x00\x00\x00\xc7\x44\x24\x40\xd8\xa9\x6b\x02\xc7\x44\x24\x44\x0d\x00\x00\x00\xe9\x1a\x00\x00\x00\xc7\x44\x24\x40\xe4\xa9\x6b\x02\xe9\xab\x00\x00\x00\xc7\x44\x24\x40\x60\xaa\x6b\x02\xe9\x9e\x00\x00\x00\x48\x8b\x87\x40\x07\x00\x00\x48\x85\xc0\x0f\x84\xbf\x00\x00\x00\x48\x8b\x40\x10\x48\x85\xc0\x0f\x84\xb2\x00\x00\x00\x48\x8b\x48\x18\x48\x8b\x50\x20\x48\x39\xd1\x0f\x83\xa1\x00\x00\x00\x48\x8b\x01\x83\x38\x08\x0f\x84\x09\x00\x00\x00\x48\x83\xc1\x08\xe9\xe2\xff\xff\xff\x48\x8b\x48\x18\x48\x8b\x50\x20\x48\x39\xd1\x0f\x83\x7b\x00\x00\x00\x48\x8b\x01\x83\x38\x02\x0f\x84\x09\x00\x00\x00\x48\x83\xc1\x08\xe9\xe2\xff\xff\xff\x48\x8b\x48\x18\x48\x8b\x50\x20\x48\x39\xd1\x0f\x83\x55\x00\x00\x00\x48\x8b\x01\x44\x8b\x44\x24\x44\x44\x39\x00\x0f\x84\x09\x00\x00\x00\x48\x83\xc1\x08\xe9\xdd\xff\xff\xff\x80\x78\x10\x00\x0f\x84\x31\x00\x00\x00\x48\x89\xf9\x48\x8b\x07\xff\x90\x90\x02\x00\x00\x88\x87\x34\x07\x00\x00\x84\xc0\x0f\x84\x17\x00\x00\x00\x44\x8b\x44\x24\x40\x49\x01\xd8\x31\xd2\x48\x89\xf9\xb8\x80\x35\xcd\x00\x48\x01\xd8\xff\xd0\x48\x83\xc4\x60\x5f\x5e\x5b\xc3\x48\x89\xf9\x48\x8b\x54\x24\x30\xb8\xf0\x3b\xcd\x00\x48\x01\xd8\x48\x83\xc4\x60\x5f\x5e\x5b\xff\xe0\x83\xfa\x01\x0f\x85\x91\x00\x00\x00\x49\xbb\xbe\xbe\xbe\xbe\xbe\xbe\xbe\xbe\x49\x81\xc3\x68\xae\x6b\x02\x4d\x39\x1c\x24\x0f\x85\x76\x00\x00\x00\x49\xbb\xad\xad\xad\xad\xad\xad\xad\xad\x41\x80\x3b\x01\x0f\x85\x62\x00\x00\x00\x4d\x8b\x9c\x24\x88\x00\x00\x00\x4d\x85\xdb\x0f\x84\x51\x00\x00\x00\x41\x83\xbb\xa0\x00\x00\x00\x01\x0f\x85\x43\x00\x00\x00\x41\x8b\x83\xd8\x00\x00\x00\x83\xf8\x03\x0f\x85\x15\x00\x00\x00\x41\x83\xf8\x06\x0f\x85\x29\x00\x00\x00\x41\xb8\x04\x00\x00\x00\xe9\x1e\x00\x00\x00\x83\xf8\x06\x0f\x85\x15\x00\x00\x00\x41\x83\xf8\x03\x0f\x85\x0b\x00\x00\x00\x41\xb8\x04\x00\x00\x00\xe9\x00\x00\x00\x00\xff\x25\x33\x00\x00\x00\x49\xbb\xbe\xbe\xbe\xbe\xbe\xbe\xbe\xbe\x49\x81\xc3\xd0\xfe\xe3\x00\x41\xff\xd3\x0f\x28\xdf\x0f\x28\xd7\xb2\x01\x49\x8b\xcc\x49\xbb\xbe\xbe\xbe\xbe\xbe\xbe\xbe\xbe\x49\x81\xc3\x1a\xb0\xe3\x00\x41\xff\xe3\x00\x00\x00\x00\x00\x00\x00\x00\x70\x5f\x69\x6e\x66\x6f\x00\x62\x61\x6c\x5f\x74\x72\x61\x6e\x73\x66\x65\x72\x5f\x70\x6c\x61\x79\x65\x72\x00\x62\x61\x6c\x5f\x74\x72\x61\x6e\x73\x66\x65\x72\x5f\x63\x6c\x75\x62\x00\x62\x61\x6c\x5f\x74\x72\x61\x6e\x73\x66\x65\x72\x5f\x66\x65\x65\x00\x62\x61\x6c\x5f\x74\x72\x61\x6e\x73\x66\x65\x72\x5f\x66\x72\x6f\x6d\x00\x62\x61\x6c\x5f\x74\x72\x61\x6e\x73\x66\x65\x72\x5f\x74\x6f\x00"
+local bal_size, bal_adler = 509027, 2606886345
+
+local function poll_bal_transfer()
+    if not bal_ready then return end
+    local owner = u64(base + 0x3705e10)
+    if owner == 0 then return end
+    local career = u64(owner + 0x48)
+    if career == 0 then return end
+    if career ~= bal_career then
+        bal_career, bal_window_start, bal_window_best = career, nil, nil
+        memory.write(bal_control + 16, string.rep("\0", 168 - 16))
+        write_card_text(bal_control + 16, "Waiting for transfer news")
+    end
+    local data = transfer_market.snapshot(memory.read, base)
+    if not data then return end
+    local player, club, fee, from_crest, to_crest
+    bal_window_best, bal_window_start, player, club, fee, from_crest, to_crest =
+        transfer_card(career, data, bal_window_best, bal_window_start)
+    write_card_text(bal_control + 16, player)
+    write_card_text(bal_control + 16 + 48, club)
+    write_card_text(bal_control + 16 + 96, fee)
+    memory.write(bal_control + 160, memory.pack("u32", from_crest) .. memory.pack("u32", to_crest))
+end
+
+bal_visual_ready = function(data, size, total, offset)
+    if not bal_control or offset ~= 0 or size ~= total or size ~= bal_size then return end
+    local bytes = memory.read(data, size)
+    if type(bytes) == "string" and #bytes == bal_size and adler32(bytes) == bal_adler then
+        bal_ready = true
+        memory.write(bal_control, "\1")
+        poll_bal_transfer()
+        log("BALLAYOUT VISUAL APPLIED")
+    end
+end
+
+bal_mode_left = function()
+    if bal_control then memory.write(bal_control, "\0") end
+    bal_ready, bal_career, bal_window_start, bal_window_best = false, nil, nil, nil
+end
+
+local function pack_menu(...)
+    local entries = {...}
+    local bytes = {}
+    for i = 1, 11 do bytes[i] = memory.pack("u32", entries[i] or 0) end
+    return table.concat(bytes)
+end
+
+mount_bal_dashboard = function()
+    if bal_control then return true end
+    base = base or addr(k.GetModuleHandleA(nil))
+    local render, event = base + 0x26bae98, base + 0x26baf78
+    local root, team, system = base + 0x26bab60, base + 0x26bac10, base + 0x26bac68
+    local direction = base + direction_commit
+    local direction_before = ml_focus_jump or direction_bytes
+    local before_root = pack_menu(1, 2, 108, 6, 4, 7, 8)
+    local before_team = pack_menu(4, 39, 18, 74, 76)
+    local before_system = pack_menu(8, 64, 65, 105, 67, 110)
+    if memory.read(root, #before_root) ~= before_root
+       or memory.read(team, #before_team) ~= before_team
+       or memory.read(system, #before_system) ~= before_system
+       or memory.read(direction, #direction_before) ~= direction_before
+       or u64(render) ~= base + 0xe3ef10 or u64(event) ~= base + 0xcd3bf0
+       or memory.read(base + 0xbbdd8a, 5) ~= "\xe8\x21\x2e\x11\x00"
+       or memory.read(base + 0xbbdd16, 7) ~= "\x49\x89\x86\x98\x00\x00\x00"
+       or memory.read(base + 0xe504c0, 8) ~= "\xe9\xab\xd7\x03\x00\xcc\xcc\xcc"
+       or memory.read(base + 0xe5cda0, 8) ~= "\x48\x8b\xc4\x55\x41\x56\x41\x57"
+       or memory.read(base + 0xcd3580, 8) ~= "\x48\x89\x5c\x24\x10\x48\x89\x6c"
+       or not transfer_market.supports(memory.read, base) then
+        log("BALLAYOUT DISABLED game signatures do not match")
+        return false
+    end
+    if memory.read(base + 0x26ba9cc, 7) ~= "mydata\0" then return false end
+    if memory.read(base + 0x26baa38, 9) ~= "lifetime\0" then return false end
+    if memory.read(base + 0x26ba788, 6) ~= "match\0" then return false end
+    if memory.read(base + 0x26ba9d8, 10) ~= "skipmatch\0" then return false end
+    if memory.read(base + 0x26ba9e4, 7) ~= "market\0" then return false end
+    if memory.read(base + 0x26baa60, 9) ~= "schedule\0" then return false end
+    local buffer = addr(memory.allocate_codecave(168))
+    memory.write(buffer, string.rep("\0", 168))
+    local code, images = bal_code:gsub("\xbe\xbe\xbe\xbe\xbe\xbe\xbe\xbe", function() return memory.pack("u64", base) end)
+    local relocated, buffers = code:gsub("\xad\xad\xad\xad\xad\xad\xad\xad", function() return memory.pack("u64", buffer) end)
+    if images ~= 5 or buffers ~= 3 then return false end
+    local cave = addr(memory.allocate_codecave(#relocated))
+    local tail = 1626
+    local destination = ml_focus_target or cave + 1575
+    code = relocated:sub(1, tail) .. memory.pack("u64", destination) .. relocated:sub(tail + 9)
+    memory.write(cave, code)
+    if memory.read(cave, #code) ~= code
+       or k.FlushInstructionCache(k.GetCurrentProcess(), ptr(cave), #code) == 0 then return false end
+    local previous, discard = ffi.new("uint32_t[1]"), ffi.new("uint32_t[1]")
+    local previous_direction = ffi.new("uint32_t[1]")
+    local span = event + 8 - root
+    if k.VirtualProtect(ptr(root), span, 4, previous) == 0 then return false end
+    local jump = "\xff\x25\x00\x00\x00\x00" .. memory.pack("u64", cave + 1415) .. "\x90\x90"
+    if k.VirtualProtect(ptr(direction), #jump, 0x40, previous_direction) == 0 then
+        k.VirtualProtect(ptr(root), span, previous[0], discard)
+        return false
+    end
+    local after = {
+        {root, before_root, pack_menu(1, 98, 99, 6, 4, 7, 8)},
+        {team, before_team, pack_menu(4, 39, 18, 74, 76, 108)},
+        {system, before_system, pack_menu(8, 64, 65, 105, 67, 110, 2)},
+        {render, memory.pack("u64", base + 0xe3ef10), memory.pack("u64", cave)},
+        {event, memory.pack("u64", base + 0xcd3bf0), memory.pack("u64", cave + 862)},
+        {direction, direction_before, jump},
+    }
+    for _, patch in ipairs(after) do memory.write(patch[1], patch[3]) end
+    local valid = true
+    for _, patch in ipairs(after) do
+        if memory.read(patch[1], #patch[3]) ~= patch[3] then valid = false end
+    end
+    valid = valid and k.FlushInstructionCache(k.GetCurrentProcess(), ptr(direction), #jump) ~= 0
+    local direction_restored = k.VirtualProtect(ptr(direction), #jump, previous_direction[0], discard) ~= 0
+    local data_restored = k.VirtualProtect(ptr(root), span, previous[0], discard) ~= 0
+    if valid and direction_restored and data_restored then
+        bal_focus_jump, bal_focus_tail = jump, cave + tail
+        bal_control = buffer
+        write_card_text(buffer + 16, "Waiting for transfer news")
+        log("BALLAYOUT READY BAL controls mounted")
+        return true
+    end
+    k.VirtualProtect(ptr(root), span, 4, discard)
+    k.VirtualProtect(ptr(direction), #jump, 0x40, discard)
+    for _, patch in ipairs(after) do memory.write(patch[1], patch[2]) end
+    k.FlushInstructionCache(k.GetCurrentProcess(), ptr(direction), #jump)
+    k.VirtualProtect(ptr(root), span, previous[0], discard)
+    k.VirtualProtect(ptr(direction), #jump, previous_direction[0], discard)
+    return false
+end
+
+bal_resource_tick = function()
+    if not bal_ready then return end
+    bal_reads = bal_reads + 1
+    if bal_reads % 120 == 0 then poll_bal_transfer() end
 end
 
 -- FL 2027 Master League root rows, patched in memory before the menu loads.
@@ -566,8 +723,6 @@ local national_tree = 0x26AE420
 local system_offset = 6 * 44
 local close_popup = 0xCD3E5C
 local close_popup_bytes = "\x45\x33\xc0\x33\xd2\x49\x8b\x8e\x48\x07\x00\x00\xe8\xf3\xef\x16\x00"
-local direction_commit = 0xE3B00A
-local direction_bytes = "\xe8\xc1\x4e\x00\x00\x0f\x28\xdf\x0f\x28\xd7\xb2\x01\x49\x8b\xcc"
 local function menu_root_bytes(ids)
     local parts = {}
     for i, id in ipairs(ids) do parts[i] = memory.pack("u32", id) end
@@ -583,6 +738,7 @@ local function mount_dashboard_header(focus_redirect)
     local national = base + national_tree
     local popup = base + close_popup
     local direction = base + direction_commit
+    local direction_before = bal_focus_jump or direction_bytes
     -- Forward Time remains reachable through System on days with no match.
     if memory.read(club, #before) ~= before or memory.read(national, #before) ~= before
        or memory.read(club + system_offset, #system_before) ~= system_before
@@ -590,7 +746,7 @@ local function mount_dashboard_header(focus_redirect)
        or memory.read(base + 0xB84F23, 9) ~= "\x41\xb8\x07\x00\x00\x00\x48\x8b\xcf"
        or memory.read(base + 0x26ADE10, 8) ~= "\x06\x00\x00\x00\x21\x00\x1d\x00"
        or memory.read(popup, #close_popup_bytes) ~= close_popup_bytes
-       or memory.read(direction, #direction_bytes) ~= direction_bytes
+       or memory.read(direction, #direction_before) ~= direction_before
        or memory.read(u64(base + 0x26ADE18), 9) ~= "negomenu\0" then
         return false
     end
@@ -608,7 +764,7 @@ local function mount_dashboard_header(focus_redirect)
         return false
     end
     local detour = jump .. memory.pack("u64", cave) .. "\x90\x90\x90"
-    local direction_detour = jump .. memory.pack("u64", focus_redirect) .. "\x90\x90"
+    local direction_detour = bal_focus_jump or (jump .. memory.pack("u64", focus_redirect) .. "\x90\x90")
 
     -- Both roots and their first children are on the same protected page.
     local size = national - club + system_offset + #system_after
@@ -641,12 +797,18 @@ local function mount_dashboard_header(focus_redirect)
     local code_restored = k.VirtualProtect(ptr(popup), #detour, code_original[0], scratch) ~= 0
     local direction_restored = k.VirtualProtect(ptr(direction), #direction_detour, direction_original[0], scratch) ~= 0
     local data_restored = k.VirtualProtect(ptr(club), size, original[0], scratch) ~= 0
-    if ok and code_restored and direction_restored and data_restored then return true end
+    if ok and code_restored and direction_restored and data_restored then
+        if bal_focus_tail then
+            memory.write(bal_focus_tail, memory.pack("u64", focus_redirect))
+        end
+        ml_focus_jump, ml_focus_target = direction_detour, focus_redirect
+        return true
+    end
     k.VirtualProtect(ptr(popup), #detour, 0x40, scratch)
     k.VirtualProtect(ptr(direction), #direction_detour, 0x40, scratch)
     k.VirtualProtect(ptr(club), size, 4, scratch)
     memory.write(popup, close_popup_bytes)
-    memory.write(direction, direction_bytes)
+    memory.write(direction, direction_before)
     memory.write(club, before)
     memory.write(national, before)
     memory.write(club + system_offset, system_before)
@@ -796,6 +958,10 @@ end
 
 
 function m.data_ready(ctx,filename,data,size,total,offset)
+ if career_mode=="bal" and is_asset(filename) then
+  bal_visual_ready(data,tonumber(size),tonumber(total),tonumber(offset))
+  return
+ end
  if not ml_session then return end
  if type(filename)~="string" or filename:lower():gsub("/","\\")~="common\\menu\\general\\modemainmenufl.bin" then return end
  if installed then memory.write(control+8,memory.pack("u32",0)) end
@@ -810,6 +976,7 @@ function m.data_ready(ctx,filename,data,size,total,offset)
 end
 function m.resource_tick(ctx)
  frame=frame+1
+ if career_mode=="bal" then bal_resource_tick() end
  if installed and control then
   local match=tonumber(ctx.match_id) or 0
   local stadium=tonumber(ctx.stadium) or 65535
@@ -852,7 +1019,7 @@ function m.resource_tick(ctx)
 end
 function m.make_key(ctx,filename)
  local path=m.get_filepath(ctx,filename)
- if path then return "touchline-ml-dashboard-1223:"..path end
+ if path then return "touchline-ml-dashboard-1229:"..path end
 end
 function m.init(ctx)
  if not ffi then log("MLLAYOUT DISABLED FFI unavailable");return end
@@ -892,7 +1059,7 @@ function m.init(ctx)
   local file=io.open(path,"rb")
   if file then
    local data=file:read("*a");file:close()
-   if #data==549274 and adler32(data)==1145962759 then bal_visual_path=path end
+   if #data==509027 and adler32(data)==2606886345 then bal_visual_path=path end
   end
  end
  ctx.register("livecpk_get_filepath",m.get_filepath)

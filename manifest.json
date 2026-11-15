@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "2.1.0",
+  "version": "2.2.0",
   "files": [
     {
       "path": "livecpk/TouchlinePrologue2/common/menu/credit_tex/creditLogo_degidelic.bin",
@@ -794,8 +794,8 @@
     },
     {
       "path": "modules/TouchlineMLDashboard.lua",
-      "sha256": "ba57926d4994badbdbaba77c1f4b797d7c74296ac3edcf986bb0a2bc09f2a620",
-      "size": 151918
+      "sha256": "6fdbedf221d64caf76817fb7421d98386ca55439e1cb288c39507b31b5adaa0f",
+      "size": 166844
     },
     {
       "path": "modules/TouchlineMLDashboard/MLMainManu.json",
@@ -814,8 +814,8 @@
     },
     {
       "path": "modules/TouchlineMLDashboard/modeMainMenuBAL.bin",
-      "sha256": "84a052b5ac507711dd75db0c630da8c7ea4e34887e0ebf22014a51f5f5642e3b",
-      "size": 549274
+      "sha256": "0058a07687d0f5c24c4d1a453bf19ab7e74bb1c104243ed1bcdba5c266af9986",
+      "size": 509027
     },
     {
       "path": "modules/TouchlineMLDashboard/modeMainMenuFl.bin",
