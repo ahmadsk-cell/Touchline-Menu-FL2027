@@ -1,0 +1,52 @@
+{
+  "events": {
+    "0_compemain": {
+      "to": "Compe/CompeMainMenu",
+      "go": "backward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "1_mlmain": {
+      "to": "ML/MLMainManu",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "2_leaguemain": {
+      "to": "League/LeagueMainMenu",
+      "go": "backward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "3_blmain": {
+      "to": "BL/BLMainMenu",
+      "go": "backward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "4_topics": {
+      "to": "Common/CmnTopicsSelectFlow",
+      "go": "backward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    }
+  },
+  "data": {
+    "type": "process",
+    "bgId": "BG_ID_ML_ACL",
+    "dialog": ""
+  },
+  "binFile": {
+    "files": []
+  }
+}

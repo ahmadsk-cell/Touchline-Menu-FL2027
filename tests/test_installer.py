@@ -48,6 +48,7 @@ class InstallerTests(unittest.TestCase):
         ini=(self.game/'sider.ini').read_text()
         self.assertIn('cpk.root = ".\\livecpk\\TouchlinePrologue2"',ini)
         self.assertIn('lua.module = "TouchlineMenuColors.lua"',ini)
+        self.assertIn('luajit.ext.enabled = 1\nlua.module = "TouchlineMLDashboard.lua"',ini)
         self.assertFalse((self.game/'livecpk/MenuC1987').exists())
         self.assertFalse((self.game/'modules/UIColors.lua').exists())
         result=self.restore(backup);self.assertEqual(result.returncode,0,result.stderr)
@@ -73,6 +74,21 @@ class InstallerTests(unittest.TestCase):
         backup=self.install();put(self.game/'content/touchline-menu/map_exe.txt',b'later user change')
         before=snapshot(self.game);result=self.restore(backup)
         self.assertNotEqual(result.returncode,0);self.assertIn('Changed since installation',result.stderr)
+        self.assertEqual(snapshot(self.game),before)
+
+    def test_dashboard_preview_upgraded_and_restored(self):
+        ini=self.game/'sider.ini'
+        old_dashboard=self.game/'modules/TouchlineMLDashboard.lua'
+        put(old_dashboard,b'-- previous dashboard preview\n')
+        put(ini,ini.read_bytes()+b'luajit.ext.enabled = 0\r\nlua.module = ".\\TouchlineMLDashboard.lua"\r\nlua.module = "MLMenuLayoutTrial.lua"\r\n')
+        before=snapshot(self.game);backup=self.install()
+        active=ini.read_text()
+        self.assertEqual(active.count('lua.module = "TouchlineMLDashboard.lua"'),1)
+        self.assertEqual(active.count('luajit.ext.enabled'),1)
+        self.assertIn('luajit.ext.enabled = 1',active)
+        self.assertNotIn('MLMenuLayoutTrial.lua',active)
+        self.assertNotEqual(sha(old_dashboard),before['modules/TouchlineMLDashboard.lua'])
+        self.assertEqual(self.restore(backup).returncode,0)
         self.assertEqual(snapshot(self.game),before)
 
     def test_unknown_retired_override_is_preserved(self):

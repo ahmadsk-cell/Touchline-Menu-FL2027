@@ -25,6 +25,13 @@ Its palette signature resolves to RVA `0x34C08D0`. The title-screen layout
 has SHA-256 `e2321ea64cd659b5641f58d695d823eba23ca10151175e74304a8d4f7e7d266f`
 and is byte-identical to the previously inspected FL 2026 layout.
 
+The bundled Master League dashboard 1.2.23 checks native signatures before
+applying the layout and uses the stock menu when those checks fail. Its crown
+and dropdowns were verified in a live FC Lorient career. Earlier dashboard
+checks covered Play Match, Skip Match, Coach Mode, Schedule focus, the Youth
+Training and Favourite Players shortcuts, and the transition from Become a
+Legend to Master League in one game session.
+
 A live Sider session reported all 80 palette assignments, “Patching complete”
 and successful initialization of TouchlineMenuColors.lua. The title screen
 filled the screen correctly, the portrait main menu rendered, and the career

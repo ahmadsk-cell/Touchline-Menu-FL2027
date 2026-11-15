@@ -1,0 +1,490 @@
+{
+  "events": {
+    "00_match": {
+      "to": "Common/CmnMatchOnlyDataCopy",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "01_exit": {
+      "to": "TopMenu/TopMenu",
+      "go": "backward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "02_compeinfo": {
+      "to": "Common/CmnCompeInfoCheck",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "03_save": {
+      "to": "Common/CmnSaveIdle",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "04_autosave": {
+      "to": "Common/AutoSave/ProcCheck",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "05_schedule": {
+      "to": "Common/CmnScheduleMenu",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "06_gameplan": {
+      "to": "Common/CmnModeMainMenuGamePlanCreation",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "07_negomenu": {
+      "to": "ML/Negociation/MLNegoMenu",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "08_training": {
+      "to": "ML/MLTraining",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "09_skilltraining": {
+      "to": "ML/MLSkillTraining",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "10_youthtraining": {
+      "to": "ML/MLYouthTraining",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "11_uniform": {
+      "to": "ML/MLUniformNumberSettingClub",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "12_generalset": {
+      "to": "ML/MLGeneralSettingsMain",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "13_memberlist": {
+      "to": "ML/MLMyTeamMemberList",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "14_coachoffer": {
+      "to": "ML/Negociation/MLNegoCoachOfferList",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "15_market": {
+      "to": "Common/CmnTransferMarket",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "16_favorite": {
+      "to": "Common/CmnHallPlayerMemberList",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "17_teamsave": {
+      "to": "Common/CmnWaitBGSaveLoad",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "18_cash": {
+      "to": "ML/Accounting/MLAccountingClubBS",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "19_skipmatch": {
+      "to": "Common/CmnUpdateSkipMatch",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "20_teamrecord": {
+      "to": "Common/CmnTeamRecordMenu",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "21_teaminfo": {
+      "to": "Common/CmnTeamInfoTeamSelection",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "22_clubrank": {
+      "to": "Common/CmnClubRanking",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "23_leaguerankeu": {
+      "to": "Common/CmnLeagueRankingEU",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "24_nationalrank": {
+      "to": "Common/CmnNationalRanking",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "25_offerlist": {
+      "to": "Common/CmnOfferList",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "26_plrecord": {
+      "to": "ML/MLPlayerRecord",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "27_leagueranksa": {
+      "to": "Common/CmnLeagueRankingSA",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "28_joincompeinfo": {
+      "to": "Common/CmnJoinCompeInfoCheck",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "29_coopsettings": {
+      "to": "Common/CmnCoopSettings",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "30_clubGamePlan": {
+      "to": "Common/CmnModeClubGamePlanCreation",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "31_appearance": {
+      "to": "ML/MLAppearanceSettings",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "32_history": {
+      "to": "ML/Coach/MLCoachMenu",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "33_teamrole": {
+      "to": "ML/MLTeamRoleList",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "34_playersInfo": {
+      "to": "Common/CmnPlayerBasicInfoTopics",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "35_playerGameDataThisMonth": {
+      "to": "ML/MLPlayerGameDataThisMonth",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "36_playerGameDataLastMonth": {
+      "to": "ML/MLPlayerGameDataLastMonth",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "37_playerGameDataSeason": {
+      "to": "ML/MLPlayerGameDataSeason",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "38_matchReportLastMonth": {
+      "to": "Common/CmnMonthlyReportLastMonth",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "39_matchReportCurrentMonth": {
+      "to": "Common/CmnMonthlyReportCurrentMonth",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "40_matchReportSeason": {
+      "to": "Common/CmnMonthlyReportSeason",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "41_philosophy": {
+      "to": "ML/Coach/MLCoachPhilosophy",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "42_matchreportmenu": {
+      "to": "Common/CmnMatchReportMenu",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "43_countdown": {
+      "to": "ML/Negociation/MLNegoCountDown",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "44_loadlegend": {
+      "to": "ML/MLMyclubLegendDialog",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "",
+      "bgType": "none"
+    },
+    "45_teamstatus": {
+      "to": "ML/MLTeamStatus",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "46_salary": {
+      "to": "ML/MLSeasonSalary",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "47_coopRoomList": {
+      "to": "Online/CoopMatch/CoopMenuClanMatchRoomList",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "48_budgetSetting": {
+      "to": "ML/MLBudgetSetting",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "49_missionlist": {
+      "to": "ML/Coach/MLCoachMissionList",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "",
+      "bgType": "none"
+    },
+    "50_mailbox": {
+      "to": "ML/MLMailBox",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "",
+      "bgType": "none"
+    },
+    "51_budgetReport": {
+      "to": "ML/MLBudgetReport",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "",
+      "bgType": "none"
+    },
+    "52_awards": {
+      "to": "Common/AwardsSelectList",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "",
+      "bgType": "none"
+    },
+    "53_national_team": {
+      "to": "ML/MenuNationalSelectList",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "54_nationalGamePlan": {
+      "to": "Common/CmnModeNationalGamePlanCreation",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "55_nationalSquad": {
+      "to": "ML/MLUniformNumberSettingNatinal",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "56_club_team": {
+      "to": "ML/MenuClubSelectList",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "57_journal": {
+      "to": "ML/MLJournalList",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "58_league_ranking": {
+      "to": "Common/CmnStandingsLeagueRanking",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    },
+    "59_mlpanel_goalranking": {
+      "to": "Common/CmnGoalRanking",
+      "go": "forward",
+      "clear": "all",
+      "fadeStart": "",
+      "fadeEnd": "do",
+      "bgType": "none"
+    }
+  },
+  "data": {
+    "type": "menu",
+    "bgId": "BG_ID_ML_ACL",
+    "dialog": "",
+    "mark": "home"
+  }
+}

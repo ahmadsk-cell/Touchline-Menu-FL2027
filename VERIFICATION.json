@@ -1,8 +1,8 @@
 {
-  "version": "2.0.0",
+  "version": "2.1.0",
   "target_game": "SP Football Life 2027",
-  "date": "2026-11-02",
-  "source_release": "Touchline Menu 1.1.6",
+  "date": "2026-11-15",
+  "source_release": "Touchline Menu FL 2027 2.0.0 and Touchline Master League Dashboard 1.2.23",
   "executable": {
     "file_version": "27.0.0.0",
     "installed_game_version": "27.1.0",
@@ -20,11 +20,12 @@
     "external_menu_pack_required": false
   },
   "installer_tests": {
-    "passed": 7,
+    "passed": 8,
     "stock_palette_conflict_disabled_and_restored": true,
     "unsupported_executable_rejected_before_target_writes": true,
     "backup_and_uninstall_verified": true,
-    "corrupt_payload_rejected": true
+    "corrupt_payload_rejected": true,
+    "dashboard_preview_upgraded_and_restored": true
   },
   "color_runtime_test": {
     "engine": "LuaJIT 2.1",
@@ -62,5 +63,18 @@
     "records_changed": 1,
     "change": "Choose Sqad Type -> Choose Squad Type",
     "all_other_records_byte_exact": true
+  },
+  "dashboard": {
+    "version": "1.2.23",
+    "sider_version_tested": "7.3.3",
+    "mock_runtime_executable_reads": 87,
+    "installed_payload_files_matching_release": 164,
+    "live_checks": [
+      "FC Lorient Master League dashboard and Yoann Gourcuff name with crown",
+      "My Team Info, Manager's Office, Database and System dropdowns aligned under their tabs",
+      "Play Match, Skip Match, Coach Mode and Favourite Players shortcut on prior dashboard builds",
+      "Stock Become a Legend navigation and subsequent Master League entry on dashboard 1.2.21"
+    ],
+    "screenshot": "docs/images/master-league-dashboard.jpg"
   }
 }

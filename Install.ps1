@@ -11,11 +11,21 @@ foreach($setting in @('livecpk','lua')){
     if($ini -match ('(?mi)^[ \t]*'+$setting+'\.enabled[ \t]*=[ \t]*0(?:[ \t;]|$)')){throw "Enable $setting in sider.ini before installing."}
 }
 $manifest=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'manifest.json') -Raw | ConvertFrom-Json
+$modulePayload=@(
+    'modules/TouchlineMenuColors.lua',
+    'modules/TouchlineMLDashboard.lua',
+    'modules/TouchlineMLDashboard/MLMainManu.json',
+    'modules/TouchlineMLDashboard/MLRestoreBackground.json',
+    'modules/TouchlineMLDashboard/RankingReturn.json',
+    'modules/TouchlineMLDashboard/modeMainMenuFl.bin',
+    'modules/TouchlineMLDashboard/modeMainMenuBAL.bin'
+)
 $changes=@();$seen=@{}
 # Validate the entire payload before changing anything in the target game.
 foreach($item in $manifest.files){
     if($seen.ContainsKey($item.path)){throw 'Duplicate manifest path'};$seen[$item.path]=$true
-    if($item.path -notmatch '^livecpk/TouchlinePrologue2/' -and $item.path -notin @('content/touchline-menu/map_exe.txt','content/touchline-menu/ui_bin_colors.ini','modules/TouchlineMenuColors.lua')){throw 'Unexpected payload path'}
+    if($item.path -notmatch '^livecpk/TouchlinePrologue2/' -and $item.path -notin $modulePayload -and
+        $item.path -notin @('content/touchline-menu/map_exe.txt','content/touchline-menu/ui_bin_colors.ini')){throw 'Unexpected payload path'}
     $source=Get-ContainedPath $PSScriptRoot $item.path
     $target=Get-ContainedPath $root $item.path
     if(!(Test-Path -LiteralPath $source -PathType Leaf) -or (Get-Sha $source) -ne $item.sha256){throw "Package checksum failed: $($item.path)"}
@@ -33,7 +43,7 @@ foreach($item in $manifest.retired){
 }
 $newline=if($ini.Contains("`r`n")){"`r`n"}else{"`n"}
 $clean=[regex]::Replace($ini,'(?mi)^[ \t]*cpk\.root[ \t]*=[ \t]*"\.\\livecpk\\TouchlinePrologue2"[^\r\n]*(\r?\n|$)','')
-$clean=[regex]::Replace($clean,'(?mi)^[ \t]*lua\.module[ \t]*=[ \t]*"TouchlineMenuColors\.lua"[^\r\n]*(\r?\n|$)','')
+$clean=[regex]::Replace($clean,'(?mi)^[ \t]*lua\.module[ \t]*=[ \t]*"(?:\.\\)?(?:TouchlineMenuColors|TouchlineMLDashboard|MLMenuLayoutTrial)\.lua"[^\r\n]*(\r?\n|$)','')
 # All required assets now live in the Touchline root. Disable the former
 # fallback packs and duplicate palette runtime, keeping their files on disk.
 $legacyRoots='(?mi)^[ \t]*cpk\.root[ \t]*=[ \t]*"\.\\livecpk\\(?:MenuC1987|UIColors|TouchlinePrologue)"[^\r\n]*'
@@ -44,9 +54,19 @@ $clean=[regex]::Replace($clean,'(?mi)^[ \t]*lua\.module[ \t]*=[ \t]*"UIColors\.l
 $clean=[regex]::Replace($clean,'(?mi)^[ \t]*lua\.module[ \t]*=[ \t]*"switcher[\\/]SPcolor\.lua"[^\r\n]*','; Disabled by Touchline FL 2027 palette: $0')
 $section=[regex]::Match($clean,'(?mi)^[ \t]*\[sider\][^\r\n]*(?:\r?\n|$)')
 if(!$section.Success){throw 'Missing [sider] section in sider.ini.'}
-$entries='cpk.root = ".\livecpk\TouchlinePrologue2"'+$newline+'lua.module = "TouchlineMenuColors.lua"'+$newline
+$bodyStart=$section.Index+$section.Length
+$nextSection=[regex]::Match($clean.Substring($bodyStart),'(?m)^[ \t]*\[')
+$bodyLength=if($nextSection.Success){$nextSection.Index}else{$clean.Length-$bodyStart}
+$body=$clean.Substring($bodyStart,$bodyLength)
+$body=[regex]::Replace($body,'(?mi)^[ \t]*luajit\.ext\.enabled[ \t]*=[^\r\n]*(\r?\n|$)','')
+$entries=@(
+    'cpk.root = ".\livecpk\TouchlinePrologue2"'
+    'luajit.ext.enabled = 1'
+    'lua.module = "TouchlineMLDashboard.lua"'
+    'lua.module = "TouchlineMenuColors.lua"'
+) -join $newline
 $prefix=if($section.Value -match '\n$'){''}else{$newline}
-$updated=$clean.Insert($section.Index+$section.Length,$prefix+$entries)
+$updated=$clean.Substring(0,$bodyStart)+$prefix+$entries+$newline+$body+$clean.Substring($bodyStart+$bodyLength)
 $backup=Get-ContainedPath $root ('TouchlineMenu-backups\'+(Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
 New-Item -ItemType Directory -Path $backup | Out-Null
 $newIni=Join-Path $backup 'sider.ini.installed'

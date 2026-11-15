@@ -1,6 +1,6 @@
 {
   "schema": 1,
-  "version": "2.0.0",
+  "version": "2.1.0",
   "files": [
     {
       "path": "livecpk/TouchlinePrologue2/common/menu/credit_tex/creditLogo_degidelic.bin",
@@ -791,6 +791,36 @@
       "path": "content/touchline-menu/ui_bin_colors.ini",
       "sha256": "d7a0dc0297c22b7bc9aaab5feb3d7edc704310048d7544ee435926a9b0d46a31",
       "size": 144
+    },
+    {
+      "path": "modules/TouchlineMLDashboard.lua",
+      "sha256": "ba57926d4994badbdbaba77c1f4b797d7c74296ac3edcf986bb0a2bc09f2a620",
+      "size": 151918
+    },
+    {
+      "path": "modules/TouchlineMLDashboard/MLMainManu.json",
+      "sha256": "f8ccf87455b02045e65e3eafaf8e498cde3b217bdc7b21964bb60bf0bef31ff1",
+      "size": 11249
+    },
+    {
+      "path": "modules/TouchlineMLDashboard/MLRestoreBackground.json",
+      "sha256": "878ec88ae8c2ae1ffdd1f9ebbb2cfd1d9615f33ed67c97939be0d7ec9eea5f23",
+      "size": 1020
+    },
+    {
+      "path": "modules/TouchlineMLDashboard/RankingReturn.json",
+      "sha256": "f2fcdcef4309b4047f8c7884f2ddebd548a3ea1c527b3a84092c65f7ba71a1bc",
+      "size": 282
+    },
+    {
+      "path": "modules/TouchlineMLDashboard/modeMainMenuBAL.bin",
+      "sha256": "84a052b5ac507711dd75db0c630da8c7ea4e34887e0ebf22014a51f5f5642e3b",
+      "size": 549274
+    },
+    {
+      "path": "modules/TouchlineMLDashboard/modeMainMenuFl.bin",
+      "sha256": "882d149bfb6ac24d9f161fd9f119f972e1e09bbddf9d8349ee4a0cef4523410f",
+      "size": 580301
     }
   ],
   "retired": [

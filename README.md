@@ -1,15 +1,18 @@
 # Touchline Menu for FL 2027
 
-A standalone charcoal, silver and champagne menu mod for **SP Football Life 2027**, with Touchline / Prologue branding, portrait main-menu scenes and quiet `#040B12` information screens. No separate menu pack or UIColors installation is required.
+A standalone charcoal, silver and champagne menu mod for **SP Football Life 2027**. It includes the Master League dashboard, portrait main-menu scenes, default Game Plan graphics and `#040B12` information screens.
 
 **[Download the latest release](https://github.com/ahmadsk-cell/Touchline-Menu-FL2027/releases/latest)** · [Installation](#installation) · [Credits](CREDITS.md)
 
-![Verified FL 2027 title screen](docs/images/title-fl2027.png)
+![Touchline Master League dashboard in an FC Lorient career](docs/images/master-league-dashboard.jpg)
 
 ![Touchline main-menu scene](docs/images/main-menu.png)
 
 ## Included
 
+- Master League dashboard with six tabs, aligned dropdowns, Play Match, Skip Match, Coach Mode, a five-day fixture calendar, standings, top scorers and live news.
+- Career cards for the highest observed transfer fee in the active window, training, notifications, youth, followers and Favourite Players. The Favourite Players card shows the selected player’s name and opens the native list.
+- A separate Touchline-styled Become a Legend menu with the game's own layout and navigation.
 - Main menu ordered as Kick-off, Master League, Become a Legend, MyClub, Gallery, Music & Audio, Settings.
 - Seven portrait scenes and short introductions for Master League and Become a Legend.
 - Dark information backgrounds with subtle smoke, fine gold lines and BootShapes branding.
@@ -24,17 +27,17 @@ A standalone charcoal, silver and champagne menu mod for **SP Football Life 2027
 
 ## Requirements
 
-- Windows with **SP Football Life 2027** and Sider, with LiveCPK and Lua enabled.
+- Windows with **SP Football Life 2027** and **Sider 7.3.3 or newer**, with LiveCPK and Lua enabled.
 - English game text. This package includes an English string-table override.
 
 All required theme files, fonts, secondary menu assets and the color component are included. Football Life and Sider themselves are not bundled. This build targets FL 2027. The installer checks for a 64-bit `FL_2027.exe` and a unique supported UI palette before changing files. PES 2021, VirtuaRed/UML and other Football Life versions are outside this release's compatibility scope.
 
-Touchline and Prologue gameplay/story systems are separate projects. Their names appear in the menu artwork; this download installs the visual theme and intro only.
+Touchline and Prologue gameplay and story systems are separate projects. No external menu pack or separate UIColors install is required.
 
 ## Installation
 
 1. Close Football Life and Sider.
-2. Download **Touchline-Menu-FL2027-v2.0.0.zip** from [GitHub Releases](https://github.com/ahmadsk-cell/Touchline-Menu-FL2027/releases/latest) and extract it completely.
+2. Download **Touchline-Menu-FL2027-v2.1.0.zip** from [GitHub Releases](https://github.com/ahmadsk-cell/Touchline-Menu-FL2027/releases/latest) and extract it completely.
 3. Double-click **Install.cmd** and enter the full path to your **SiderAddons** folder, the folder containing `sider.ini`.
 4. Start Sider and Football Life again.
 
@@ -46,7 +49,9 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Install.ps1 -SiderDir 
 
 Replace the example path with your installation. Administrator privileges are normally unnecessary if you can write to that folder.
 
-The installer verifies the package, backs up affected files, enables the single `TouchlinePrologue2` LiveCPK root and the bundled `TouchlineMenuColors.lua` component. Its palette is isolated in `content/touchline-menu`.
+The installer verifies the package, backs up affected files and enables the `TouchlinePrologue2` LiveCPK root, the dashboard and the color module. It enables Sider's LuaJIT extensions and replaces any active dashboard preview or `MLMenuLayoutTrial.lua` entry. Uninstall restores the previous configuration.
+
+To use the theme with the stock career layout, close Sider and the game, then comment out `lua.module = "TouchlineMLDashboard.lua"` in `sider.ini`.
 
 When upgrading an existing setup, the installer comments out the old MenuC1987, UIColors and TouchlinePrologue roots and the separate `UIColors.lua` module to avoid duplicate menu/palette loading. Their files remain on disk, and uninstall restores the original settings. The stock `switcher\SPcolor.lua` module is also commented out because it overwrites four entries of the theme palette. Its file stays installed, and uninstall restores the original configuration. Other Sider settings, mods and saves are preserved.
 
@@ -65,6 +70,7 @@ This restores overwritten files and settings and removes files created by that i
 ## Compatibility and troubleshooting
 
 - **No visual changes:** restart both Sider and the game; confirm `TouchlinePrologue2` and `TouchlineMenuColors.lua` are enabled, with LiveCPK and Lua enabled.
+- **Master League uses the stock layout:** check `sider.log` for `MLLAYOUT` entries. The dashboard checks executable signatures at runtime and falls back on unsupported builds. Include those log lines and your FL 2027 version when reporting an issue.
 - **Schedule or a text-entry screen is blank:** use this complete release, not an older development ZIP. If another mod overrides the same files, check LiveCPK priority. Report the game version and active menu mods with a screenshot.
 - **Different icons during a licensed competition:** the premium Game Plan set targets the default menu. Competitions can provide their own menu layouts and icons.
 - **Other menu mods:** they can override the same files or runtime colors. Use one default menu theme at a time. The installer backs up existing theme files and settings; it does not merge other menu layouts.
@@ -74,7 +80,7 @@ Compatibility checks use the supplied FL 2027 executable (file version 27.0.0.0,
 
 ## Repository and packaging
 
-The repository includes 155 ready-to-install game assets, the bundled color component and its configuration, portable scripts, previews, five high-resolution Game Plan icon masters and the editable information-background SVG. The release ZIP is the easiest download for players. `DEPENDENCY-AUDIT.json` records the sources of the consolidated files.
+The repository includes the install-ready dashboard and theme, portable scripts, previews, five high-resolution Game Plan icon masters and the editable information-background SVG. The release ZIP is the easiest download for players. `DEPENDENCY-AUDIT.json` records the sources of the consolidated files.
 
 To verify and package the checked-in release using Python 3:
 

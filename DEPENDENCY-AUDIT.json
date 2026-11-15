@@ -1,7 +1,7 @@
 {
   "runtime_requirements": [
     "SP Football Life 2027",
-    "Sider with LiveCPK and Lua enabled"
+    "Sider 7.3.3 or newer with LiveCPK, Lua and LuaJIT extensions"
   ],
   "external_menu_packs_required": [],
   "bundled_color_runtime": "Namespaced UIColors 1.1 by Zlac; native recoloring map intentionally empty",
@@ -788,5 +788,18 @@
       "sha256": "7dcfb1becbd6220e4cc49028e45862a24cc424a8e6955de6bc1967076c2a771d"
     }
   ],
-  "source_release": "ahmadsk-cell/Touchline-Menu v1.1.6"
+  "source_release": "ahmadsk-cell/Touchline-Menu v1.1.6",
+  "bundled_dashboard": {
+    "version": "1.2.23",
+    "master_league": "Touchline adaptation of the supplied MLMenuLayoutTrial 0.80 layout and runtime",
+    "become_a_legend": "Touchline styling of the native FL 2027 career layout",
+    "payload": [
+      "modules/TouchlineMLDashboard.lua",
+      "modules/TouchlineMLDashboard/MLMainManu.json",
+      "modules/TouchlineMLDashboard/MLRestoreBackground.json",
+      "modules/TouchlineMLDashboard/RankingReturn.json",
+      "modules/TouchlineMLDashboard/modeMainMenuBAL.bin",
+      "modules/TouchlineMLDashboard/modeMainMenuFl.bin"
+    ]
+  }
 }

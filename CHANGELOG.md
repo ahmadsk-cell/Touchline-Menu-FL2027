@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.1.0 — FL 2027 — 2026-11-15
+
+- Bundled the tested Touchline Master League Dashboard 1.2.23 into the full theme and installer.
+- Added the horizontal six-tab navigation with dropdowns aligned beneath their tabs, plus match actions, the fixture calendar, standings, top scorers and news.
+- Included the Top Transfer, training, notifications, youth, followers and Favourite Players cards. The Favourite Players card shows the first favourite's name with the Touchline crown.
+- Included the separate Become a Legend theme with the game's career layout and navigation.
+- Upgrades replace active dashboard preview entries and back up the old files and Sider settings for restoration.
+
 ## 2.0.0 — FL 2027 — 2026-11-02
 
 - Dedicated FL 2027 repository and release, based on Touchline Menu 1.1.6.
