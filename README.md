@@ -39,7 +39,7 @@ Touchline and Prologue gameplay and story systems are separate projects. No exte
 ## Installation
 
 1. Close Football Life and Sider.
-2. Download **Touchline-Menu-FL2027-v2.2.0.zip** from [GitHub Releases](https://github.com/ahmadsk-cell/Touchline-Menu-FL2027/releases/latest) and extract it completely.
+2. Download **Touchline-Menu-FL2027-v2.2.1.zip** from [GitHub Releases](https://github.com/ahmadsk-cell/Touchline-Menu-FL2027/releases/latest) and extract it completely.
 3. Double-click **Install.cmd** and enter the full path to your **SiderAddons** folder, the folder containing `sider.ini`.
 4. Start Sider and Football Life again.
 
@@ -52,6 +52,8 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\Install.ps1 -SiderDir 
 Replace the example path with your installation. Administrator privileges are normally unnecessary if you can write to that folder.
 
 The installer verifies the package, backs up affected files and enables the `TouchlinePrologue2` LiveCPK root, the dashboard and the color module. It enables Sider's LuaJIT extensions and replaces any active dashboard preview or `MLMenuLayoutTrial.lua` entry. Uninstall restores the previous configuration.
+
+The installer creates its backup under `SiderAddons\TouchlineMenu-backups` before writing menu files or Sider settings. If backup creation fails, check that `SiderAddons` is writable and that `TouchlineMenu-backups` is a folder if it already exists. For an FL 2027 installation on Desktop or in OneDrive, check **Windows Security → Protection history** for a blocked write. If Windows blocked the write, use an FL 2027 installation in a writable games folder outside Desktop and OneDrive.
 
 To use the theme with the stock career layout, close Sider and the game, then comment out `lua.module = "TouchlineMLDashboard.lua"` in `sider.ini`.
 

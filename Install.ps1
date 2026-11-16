@@ -68,7 +68,15 @@ $entries=@(
 $prefix=if($section.Value -match '\n$'){''}else{$newline}
 $updated=$clean.Substring(0,$bodyStart)+$prefix+$entries+$newline+$body+$clean.Substring($bodyStart+$bodyLength)
 $backup=Get-ContainedPath $root ('TouchlineMenu-backups\'+(Get-Date -Format 'yyyyMMdd-HHmmss-fff'))
-New-Item -ItemType Directory -Path $backup | Out-Null
+try {
+    New-Item -ItemType Directory -Path $backup | Out-Null
+} catch {
+    $message = "Could not create the backup folder '$backup'. " +
+        'Installation stopped before writing menu files or Sider settings. ' +
+        'Check that SiderAddons is writable and that TouchlineMenu-backups is a folder if it already exists. ' +
+        'For a game installed under Desktop or OneDrive, check Windows Security > Protection history for blocked writes.'
+    throw "$message $($_.Exception.Message)"
+}
 $newIni=Join-Path $backup 'sider.ini.installed'
 [IO.File]::WriteAllBytes($newIni,$encoding.GetBytes($updated))
 $changes+=@{path='sider.ini';source=$newIni;after=(Get-Sha $newIni);before=(Get-Sha $iniPath)}

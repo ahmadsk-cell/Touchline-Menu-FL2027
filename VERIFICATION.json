@@ -1,5 +1,5 @@
 {
-  "version": "2.2.0",
+  "version": "2.2.1",
   "target_game": "SP Football Life 2027",
   "date": "2026-11-15",
   "source_release": "Touchline Menu FL 2027 2.1.0 and Touchline career dashboards 1.2.29",
@@ -20,7 +20,8 @@
     "external_menu_pack_required": false
   },
   "installer_tests": {
-    "passed": 8,
+    "passed": 9,
+    "backup_folder_creation_failure_reports_path_before_install": true,
     "stock_palette_conflict_disabled_and_restored": true,
     "unsupported_executable_rejected_before_target_writes": true,
     "backup_and_uninstall_verified": true,

@@ -107,6 +107,19 @@ class InstallerTests(unittest.TestCase):
         self.assertEqual(snapshot(self.game),before)
         self.assertFalse((self.game/'TouchlineMenu-backups').exists())
 
+    def test_backup_folder_creation_failure_reports_path_before_install(self):
+        backup_root = self.game / 'TouchlineMenu-backups'
+        put(backup_root, b'existing file occupying the backup directory path')
+        before = snapshot(self.game)
+
+        result = ps(ROOT / 'Install.ps1', '-SiderDir', self.game)
+
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('Could not create the backup folder', result.stderr)
+        self.assertIn(str(backup_root), result.stderr.replace('\n', ''))
+        self.assertEqual(snapshot(self.game), before)
+        self.assertTrue(backup_root.is_file())
+
     def test_fl2027_stock_palette_module_disabled_and_restored(self):
         ini=self.game/'sider.ini'
         put(ini,ini.read_bytes()+b'lua.module = "switcher\\SPcolor.lua"\r\nlua.module = "switcher\\SPclassics.lua"\r\nlua.module = "MLRuntime.lua"\r\nlua.module = "common\\movieintro.lua"\r\n')

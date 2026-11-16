@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.1 — FL 2027
+
+- If backup creation fails, the installer reports the full folder path and explains that it stopped before writing menu files or Sider settings.
+- Added troubleshooting steps for unwritable SiderAddons folders and Windows-protected Desktop or OneDrive locations.
+
 ## 2.2.0 — FL 2027
 
 - Added a player-focused Become a Legend dashboard with My Data and Career Records in the top bar.
