@@ -2,6 +2,7 @@
 
 ## 2.2.1 — FL 2027
 
+- In Master League, Play Match uses the game's Next action to resume time between fixtures when it is available.
 - If backup creation fails, the installer reports the full folder path and explains that it stopped before writing menu files or Sider settings.
 - Added troubleshooting steps for unwritable SiderAddons folders and Windows-protected Desktop or OneDrive locations.
 

@@ -2,7 +2,7 @@
   "version": "2.2.1",
   "target_game": "SP Football Life 2027",
   "date": "2026-11-15",
-  "source_release": "Touchline Menu FL 2027 2.1.0 and Touchline career dashboards 1.2.29",
+  "source_release": "Touchline Menu FL 2027 2.1.0 and Touchline career dashboards 1.2.30",
   "executable": {
     "file_version": "27.0.0.0",
     "installed_game_version": "27.1.0",
@@ -66,12 +66,14 @@
     "all_other_records_byte_exact": true
   },
   "dashboard": {
-    "version": "1.2.29",
+    "version": "1.2.30",
     "sider_version_tested": "7.3.3",
-    "mock_runtime_executable_reads": 100,
+    "mock_runtime_executable_reads": 103,
+    "master_league_time_advance": "Emulated Play Match with match-day action enabled, disabled or absent, including an unavailable Next action and a rejected native transition",
     "installed_payload_files_matching_release": 164,
     "live_checks": [
       "FC Lorient Master League dashboard and Yoann Gourcuff name with crown",
+      "Play Match advanced the paused FC Lorient career from 16 March to 21 March on dashboard 1.2.30",
       "My Team Info, Manager's Office, Database and System dropdowns aligned under their tabs",
       "Play Match, Skip Match, Coach Mode and Favourite Players shortcut on prior dashboard builds",
       "Stock Become a Legend navigation and subsequent Master League entry on dashboard 1.2.21"
