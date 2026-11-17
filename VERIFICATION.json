@@ -1,8 +1,8 @@
 {
-  "version": "2.2.1",
+  "version": "2.2.2",
   "target_game": "SP Football Life 2027",
-  "date": "2026-11-15",
-  "source_release": "Touchline Menu FL 2027 2.1.0 and Touchline career dashboards 1.2.30",
+  "date": "2026-11-16",
+  "source_release": "Touchline Menu FL 2027 2.2.1 and Touchline career dashboards 1.2.32",
   "executable": {
     "file_version": "27.0.0.0",
     "installed_game_version": "27.1.0",
@@ -66,9 +66,9 @@
     "all_other_records_byte_exact": true
   },
   "dashboard": {
-    "version": "1.2.30",
+    "version": "1.2.32",
     "sider_version_tested": "7.3.3",
-    "mock_runtime_executable_reads": 103,
+    "mock_runtime_executable_reads": 106,
     "master_league_time_advance": "Emulated Play Match with match-day action enabled, disabled or absent, including an unavailable Next action and a rejected native transition",
     "installed_payload_files_matching_release": 164,
     "live_checks": [
@@ -99,6 +99,7 @@
     "live_activation": "Logged BAL controls mounted and visual asset applied after switching from Master League",
     "live_shortcut_walkthrough": "My Data, Career Records, Top Transfer and Schedule were verified in the BAL save",
     "skip_match_focus": "Directional routes tested in emulation and Standings-style focus pulse confirmed in game",
+    "time_advance": "Emulated Next Match with the match-day action enabled, disabled or absent, including an unavailable Next action and a rejected native transition. Verified the explicit Skip Match action with its own availability check.",
     "screenshot": "docs/images/become-a-legend-dashboard.jpg"
   }
 }

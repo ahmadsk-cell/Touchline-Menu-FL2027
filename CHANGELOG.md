@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.2.2 — FL 2027
+
+- In Become a Legend, Next Match uses the game’s Next action on days when Play Match is unavailable, including between fixtures and on career event days.
+- Fixed overlapping follower counts on the Master League dashboard.
+- Calendar and Top Transfer can display a known club’s badge when its name is unavailable.
+- Applied the dashboard fixes to the Spanish preview.
+
 ## 2.2.1 — FL 2027
 
 - In Master League, Play Match uses the game's Next action to resume time between fixtures when it is available.
