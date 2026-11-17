@@ -1,8 +1,8 @@
 {
-  "version": "2.2.2",
+  "version": "2.2.3",
   "target_game": "SP Football Life 2027",
-  "date": "2026-11-16",
-  "source_release": "Touchline Menu FL 2027 2.2.1 and Touchline career dashboards 1.2.32",
+  "date": "2026-11-17",
+  "source_release": "Touchline Menu FL 2027 2.2.2 and Touchline career dashboards 1.2.33",
   "executable": {
     "file_version": "27.0.0.0",
     "installed_game_version": "27.1.0",
@@ -66,13 +66,15 @@
     "all_other_records_byte_exact": true
   },
   "dashboard": {
-    "version": "1.2.32",
+    "version": "1.2.33",
     "sider_version_tested": "7.3.3",
-    "mock_runtime_executable_reads": 106,
+    "mock_runtime_executable_reads": 109,
     "master_league_time_advance": "Emulated Play Match with match-day action enabled, disabled or absent, including an unavailable Next action and a rejected native transition",
+    "master_league_transfer_deadline": "Emulated the native countdown route with Play Match available and unavailable, a rejected transition, and normal match and Next routes when the countdown was unavailable",
     "installed_payload_files_matching_release": 164,
     "live_checks": [
       "FC Lorient Master League dashboard and Yoann Gourcuff name with crown",
+      "Play Match opened Transfer Deadline Day in a 31 August Palermo career and the player confirmed they could continue on dashboard 1.2.33",
       "Play Match advanced the paused FC Lorient career from 16 March to 21 March on dashboard 1.2.30",
       "My Team Info, Manager's Office, Database and System dropdowns aligned under their tabs",
       "Play Match, Skip Match, Coach Mode and Favourite Players shortcut on prior dashboard builds",
@@ -100,6 +102,7 @@
     "live_shortcut_walkthrough": "My Data, Career Records, Top Transfer and Schedule were verified in the BAL save",
     "skip_match_focus": "Directional routes tested in emulation and Standings-style focus pulse confirmed in game",
     "time_advance": "Emulated Next Match with the match-day action enabled, disabled or absent, including an unavailable Next action and a rejected native transition. Verified the explicit Skip Match action with its own availability check.",
+    "live_time_advance": "Next Match advanced a BAL save on a day without a fixture on dashboard 1.2.32",
     "screenshot": "docs/images/become-a-legend-dashboard.jpg"
   }
 }

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.2.3 — FL 2027
+
+- In Master League, Play Match opens the game's Transfer Deadline Day screen when the Forward Time menu enables it. Verified in a 31 August save.
+- Included the fix in the English release and the Spanish and French previews.
+
 ## 2.2.2 — FL 2027
 
 - In Become a Legend, Next Match uses the game’s Next action on days when Play Match is unavailable, including between fixtures and on career event days.

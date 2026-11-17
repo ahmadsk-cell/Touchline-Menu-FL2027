@@ -790,7 +790,7 @@
   ],
   "source_release": "ahmadsk-cell/Touchline-Menu v1.1.6",
   "bundled_dashboard": {
-    "version": "1.2.32",
+    "version": "1.2.33",
     "master_league": "Touchline adaptation of the supplied MLMenuLayoutTrial 0.80 layout and runtime",
     "become_a_legend": "Touchline player dashboard using native FL 2027 flows and data",
     "payload": [
