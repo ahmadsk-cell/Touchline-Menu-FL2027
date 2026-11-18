@@ -11,8 +11,10 @@ foreach($setting in @('livecpk','lua')){
     if($ini -match ('(?mi)^[ \t]*'+$setting+'\.enabled[ \t]*=[ \t]*0(?:[ \t;]|$)')){throw "Enable $setting in sider.ini before installing."}
 }
 $manifest=Get-Content -LiteralPath (Join-Path $PSScriptRoot 'manifest.json') -Raw | ConvertFrom-Json
+$classic = $manifest.edition -eq 'classic'
 $modulePayload=@(
     'modules/TouchlineMenuColors.lua',
+    'modules/TouchlineClassicLauncher.lua',
     'modules/TouchlineMLDashboard.lua',
     'modules/TouchlineMLDashboard/MLMainManu.json',
     'modules/TouchlineMLDashboard/MLRestoreBackground.json',
@@ -43,7 +45,7 @@ foreach($item in $manifest.retired){
 }
 $newline=if($ini.Contains("`r`n")){"`r`n"}else{"`n"}
 $clean=[regex]::Replace($ini,'(?mi)^[ \t]*cpk\.root[ \t]*=[ \t]*"\.\\livecpk\\TouchlinePrologue2"[^\r\n]*(\r?\n|$)','')
-$clean=[regex]::Replace($clean,'(?mi)^[ \t]*lua\.module[ \t]*=[ \t]*"(?:\.\\)?(?:TouchlineMenuColors|TouchlineMLDashboard|MLMenuLayoutTrial)\.lua"[^\r\n]*(\r?\n|$)','')
+$clean=[regex]::Replace($clean,'(?mi)^[ \t]*lua\.module[ \t]*=[ \t]*"(?:\.\\)?(?:TouchlineMenuColors|TouchlineMLDashboard|MLMenuLayoutTrial|TouchlineClassicLauncher|TouchlineLauncher)\.lua"[^\r\n]*(\r?\n|$)','')
 # All required assets now live in the Touchline root. Disable the former
 # fallback packs and duplicate palette runtime, keeping their files on disk.
 $legacyRoots='(?mi)^[ \t]*cpk\.root[ \t]*=[ \t]*"\.\\livecpk\\(?:MenuC1987|UIColors|TouchlinePrologue)"[^\r\n]*'
@@ -59,10 +61,11 @@ $nextSection=[regex]::Match($clean.Substring($bodyStart),'(?m)^[ \t]*\[')
 $bodyLength=if($nextSection.Success){$nextSection.Index}else{$clean.Length-$bodyStart}
 $body=$clean.Substring($bodyStart,$bodyLength)
 $body=[regex]::Replace($body,'(?mi)^[ \t]*luajit\.ext\.enabled[ \t]*=[^\r\n]*(\r?\n|$)','')
+$careerModule = if ($classic) { 'TouchlineClassicLauncher.lua' } else { 'TouchlineMLDashboard.lua' }
 $entries=@(
     'cpk.root = ".\livecpk\TouchlinePrologue2"'
     'luajit.ext.enabled = 1'
-    'lua.module = "TouchlineMLDashboard.lua"'
+    ('lua.module = "' + $careerModule + '"')
     'lua.module = "TouchlineMenuColors.lua"'
 ) -join $newline
 $prefix=if($section.Value -match '\n$'){''}else{$newline}
