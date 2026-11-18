@@ -1,8 +1,8 @@
--- Adds System > Touchline to the career menus.
+-- Adds the companion app shortcut to each career menu.
 local m = {version="0.1.2"}
 local classic = true
-local k, user, shell, base, executable, working_directory, title
-local ready, models_ready = {}, false
+local k, user, shell, base
+local ready, apps = {}, {}
 local function number(value) return tonumber(ffi.cast("uintptr_t", value)) end
 local function ptr(value) return ffi.cast("void *", value) end
 local function u64(address) return tonumber(memory.unpack("u64", memory.read(address, 8))) end
@@ -36,31 +36,37 @@ local model_specs = {
     bal = {table=40612184, original={12314752,12314624,12086848,12087232}, identity=111},
 }
 local function mount_models()
-    for _, spec in pairs(model_specs) do
-        for index, offset in ipairs(spec.original) do
-            if u64(base+spec.table+index*8) ~= base+offset then
-                log("TOUCHLINE LAUNCHER disabled: model table differs")
-                return false
+    for mode, spec in pairs(model_specs) do
+        if apps[mode] then
+            for index, offset in ipairs(spec.original) do
+                if u64(base+spec.table+index*8) ~= base+offset then
+                    log("TOUCHLINE LAUNCHER disabled: model table differs")
+                    return false
+                end
             end
         end
     end
-    for _, spec in pairs(model_specs) do
-        local code = decode("83fa6f0f8506000000b801000000c348b80000111111110000ffe083fa6f0f850f000000488d054a0000000f1000410f1100c348b80100111111110000ffe083fa6f0f8506000000b801000000c348b80200111111110000ffe083fa6f0f8506000000b800000000c348b80300111111110000ffe06f00000072010b000000000000000000746f7563686c696e6500")
-        code=code:gsub("\x83\xfa\x6f",function() return "\x83\xfa"..string.char(spec.identity) end)
-        for index, offset in ipairs(spec.original) do code=relocate(code,index-1,base+offset) end
-        local address = allocate(code)
-        if not address then return false end
-        memory.write(address+117,memory.pack("u32",spec.identity)..memory.pack("u32",0x000B0172))
-        memory.write(address+117+8,memory.pack("u64",address+133))
-        local offsets = {0,27,63,90}
-        local values = {}
-        for _, offset in ipairs(offsets) do values[#values+1]=memory.pack("u64",address+offset) end
-        if not protect_write(base+spec.table+8,table.concat(values)) then return false end
+    for mode, spec in pairs(model_specs) do
+        if apps[mode] then
+            local code = decode("83fa6f0f8506000000b801000000c348b80000111111110000ffe083fa6f0f850f000000488d054a0000000f1000410f1100c348b80100111111110000ffe083fa6f0f8506000000b801000000c348b80200111111110000ffe083fa6f0f8506000000b800000000c348b80300111111110000ffe06f00000072010b000000000000000000746f7563686c696e6500")
+            code=code:gsub("\x83\xfa\x6f",function() return "\x83\xfa"..string.char(spec.identity) end)
+            for index, offset in ipairs(spec.original) do code=relocate(code,index-1,base+offset) end
+            local address = allocate(code)
+            if not address then return false end
+            local label = classic and mode=="bal" and 0x000B01A7 or 0x000B0172
+            memory.write(address+117,memory.pack("u32",spec.identity)..memory.pack("u32",label))
+            memory.write(address+117+8,memory.pack("u64",address+133))
+            local offsets = {0,27,63,90}
+            local values = {}
+            for _, offset in ipairs(offsets) do values[#values+1]=memory.pack("u64",address+offset) end
+            if not protect_write(base+spec.table+8,table.concat(values)) then return false end
+        end
     end
     return true
 end
 local function mount(mode)
-    if ready[mode] or not models_ready then return end
+    local app = apps[mode]
+    if ready[mode] or not app then return end
     local system, event
     local expected
     if mode=="ml" then
@@ -79,8 +85,8 @@ local function mount(mode)
     local code=decode("5356574883ec504889cf4889d64885d20f8409010000817a08007008010f85fc000000488b4a104839f90f841600000048398f480700000f85e20000004885c90f84d900000048b80d00111111110000ffd089c3488b87400700004885c00f84bb000000488b40104885c00f84ae000000488b4820482b481848c1e9034839cb0f8399000000488b4018488b04d883386f0f858800000031c948ba080011111111000048b80900111111110000ffd04885c00f842b0000004889c34889c1ba0900000048b80a00111111110000ffd04889d948b80b00111111110000ffd0e93400000031c931d249b806001111111100004531c948b807001111111100004889442420c74424280100000048b80c00111111110000ffd04883c4505f5e5bc34889f94889f24883c4505f5e5b48b80400111111110000ffe0")
     code=code:gsub("\x83\x38\x6f",function() return "\x83\x38"..string.char(model_specs[mode].identity) end)
     local values={
-        [4]=original,[6]=number(executable),[7]=number(working_directory),
-        [8]=number(title),[9]=number(user.FindWindowW),[10]=number(user.ShowWindow),
+        [4]=original,[6]=number(app.executable),[7]=number(app.directory),
+        [8]=number(app.title),[9]=number(user.FindWindowW),[10]=number(user.ShowWindow),
         [11]=number(user.SetForegroundWindow),[12]=number(shell.ShellExecuteW),
         [13]=base+0xE3D120,
     }
@@ -123,10 +129,6 @@ function m.init(ctx)
         log("TOUCHLINE LAUNCHER disabled: career menu functions differ")
         return
     end
-    local path=(ctx.sider_dir or "").."TouchlineCompanion\\Touchline.exe"
-    local file=io.open(path,"rb")
-    if not file then log("TOUCHLINE LAUNCHER missing "..path);return end
-    file:close()
     local function wide(text)
         local units={}
         local index=1
@@ -157,10 +159,30 @@ function m.init(ctx)
         buffer[#units]=0
         return buffer
     end
-    executable,working_directory,title=wide(path),wide(path:match("^(.*)\\[^\\]+$")),wide("Touchline")
-    if not executable or not working_directory or not title then return end
-    models_ready=mount_models()
-    if not models_ready then return end
+    local sider_dir=ctx.sider_dir or ""
+    local function find_app(name, folders)
+        for _, folder in ipairs(folders) do
+            local path=sider_dir..folder..name..".exe"
+            local file=io.open(path,"rb")
+            if file then
+                file:close()
+                local executable=wide(path)
+                local directory=wide(folder=="" and sider_dir or sider_dir..folder:sub(1,-2))
+                local title=wide(name)
+                if executable and directory and title then
+                    return {executable=executable, directory=directory, title=title}
+                end
+            end
+        end
+        log("TOUCHLINE LAUNCHER missing "..name..".exe")
+    end
+    apps.ml=find_app("Touchline",{"TouchlineCompanion\\"})
+    if classic then
+        apps.bal=find_app("Prologue",{"PrologueCompanion\\","Prologue\\","TouchlineCompanion\\",""})
+    else
+        apps.bal=apps.ml
+    end
+    if (not apps.ml and not apps.bal) or not mount_models() then return end
     ctx.register("livecpk_get_filepath",m.get_filepath)
     ctx.register("livecpk_data_ready",m.get_filepath)
     log("TOUCHLINE LAUNCHER initialized")

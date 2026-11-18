@@ -4,7 +4,9 @@ Classic uses the original Master League and Become a Legend menus, navigation, a
 
 Close Football Life and Sider, extract the complete Classic ZIP, and run **Install.cmd**. Enter the full path to the **SiderAddons** folder that contains `sider.ini`. Start the game through your usual FL 2027 shortcut. Classic is a complete theme package and can replace an existing Touchline dashboard installation.
 
-**System → Touchline** opens or restores the companion app when `SiderAddons\TouchlineCompanion\Touchline.exe` is installed. In Master League it uses the original “.” row. In Become a Legend it appears at the end of System. The companion app is a separate installation. The Classic preview uses the English Touchline theme assets.
+In Master League, **System → Touchline** replaces the original “.” row and opens or restores `SiderAddons\TouchlineCompanion\Touchline.exe`.
+
+In Become a Legend, **System → Prologue** appears at the end of System when `Prologue.exe` is installed in `SiderAddons\PrologueCompanion`, `SiderAddons\Prologue`, `SiderAddons\TouchlineCompanion`, or directly in `SiderAddons`. The two apps are separate installations. The Classic preview uses the English Touchline theme assets.
 
 The installer prints the backup folder. To restore the previous installation, close the game and Sider, then run this from PowerShell in the extracted package.
 
