@@ -49,10 +49,11 @@ if args.classic:
     manifest['edition'] = 'classic'
     manifest['files'] = [entry for entry in manifest['files']
                          if not entry['path'].startswith('modules/TouchlineMLDashboard')]
-    launcher = ROOT / 'modules/TouchlineClassicLauncher.lua'
-    manifest['files'].append({'path': launcher.relative_to(ROOT).as_posix(),
-                              'sha256': hashlib.sha256(launcher.read_bytes()).hexdigest(),
-                              'size': launcher.stat().st_size})
+    for relative in ('modules/TouchlineClassicLauncher.lua', 'modules/TouchlineClassicML.bin'):
+        asset = ROOT / relative
+        manifest['files'].append({'path': relative,
+                                  'sha256': hashlib.sha256(asset.read_bytes()).hexdigest(),
+                                  'size': asset.stat().st_size})
 files=[]
 for entry in manifest['files']:
     p=(ROOT/entry['path']).resolve()
@@ -71,7 +72,7 @@ assert len(files)==len(set(files))
 dist=ROOT/'dist';dist.mkdir(exist_ok=True)
 out=dist/f"Touchline-Menu-FL2027-v{manifest['version']}.zip"
 if args.classic:
-    out=out.with_name(f'{out.stem}-classic-preview.2.zip')
+    out=out.with_name(f'{out.stem}-classic-midnight-preview.zip')
     translated = classic_strings((ROOT/english_strings).read_bytes())
     entry = next(item for item in manifest['files'] if item['path']==english_strings)
     entry.update(sha256=hashlib.sha256(translated).hexdigest(),size=len(translated))
@@ -92,7 +93,7 @@ with ZipFile(out) as z:
     for entry in manifest['files']:
         assert hashlib.sha256(z.read(entry['path'])).hexdigest()==entry['sha256']
 checksum=hashlib.sha256(out.read_bytes()).hexdigest()
-sums_name = 'SHA256SUMS-classic-preview.2.txt' if args.classic else 'SHA256SUMS.txt'
+sums_name = 'SHA256SUMS-classic-midnight-preview.txt' if args.classic else 'SHA256SUMS.txt'
 (dist/sums_name).write_text(f'{checksum}  {out.name}\n',encoding='ascii')
 print(f'{out.name}: {out.stat().st_size:,} bytes; {len(manifest["files"])} verified payload files')
 print(f'SHA-256: {checksum}')

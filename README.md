@@ -12,7 +12,7 @@ A standalone charcoal, silver and champagne menu mod for **SP Football Life 2027
 
 ## Included
 
-The optional Classic edition applies Touchline’s theme to the game’s original Master League and Become a Legend menus. It adds a shortcut to the Touchline companion app and uses the game’s own career actions. [Classic edition details](docs/classic-edition.md)
+The optional Classic preview gives the original Master League and Become a Legend menus a Midnight navy theme with platinum borders and champagne accents. In Master League, **Manager’s Office → Touchline** opens the Touchline companion app. In Become a Legend, **Player Menu → Prologue** opens the Prologue companion app. [Classic preview installation and uninstall](docs/classic-edition.md)
 
 - Master League dashboard with six tabs, aligned dropdowns, Play Match, Skip Match, Coach Mode, a five-day fixture calendar, standings, top scorers and live news.
 - Career cards for the highest observed transfer fee in the active window, training, notifications, youth, followers and Favourite Players. The Favourite Players card shows the selected player’s name and opens the native list.

@@ -1,12 +1,12 @@
 # Touchline Menu Classic for FL 2027
 
-Classic uses the original Master League and Become a Legend menus, navigation, and actions with Touchline’s palette and backgrounds. It also includes the Touchline main menu and the rest of the shared theme. The dashboard uses the game’s own career screens to display fixtures, club badges, transfers, and followers.
+Classic uses the original Master League and Become a Legend menus, navigation, and actions with Midnight navy panels, platinum borders, champagne accents, and the club’s own crest in the header and Followers panel. It also includes the Touchline main menu and shared theme.
 
 Close Football Life and Sider, extract the complete Classic ZIP, and run **Install.cmd**. Enter the full path to the **SiderAddons** folder that contains `sider.ini`. Start the game through your usual FL 2027 shortcut. Classic is a complete theme package and can replace an existing Touchline dashboard installation.
 
-In Master League, **System → Touchline** replaces the original “.” row and opens or restores `SiderAddons\TouchlineCompanion\Touchline.exe`.
+In Master League, **Manager’s Office → Touchline** opens or restores `SiderAddons\TouchlineCompanion\Touchline.exe` when installed. The original “.” row is removed from System.
 
-In Become a Legend, **System → Prologue** appears at the end of System when `Prologue.exe` is installed in `SiderAddons\PrologueCompanion`, `SiderAddons\Prologue`, `SiderAddons\TouchlineCompanion`, or directly in `SiderAddons`. The two apps are separate installations. The Classic preview uses the English Touchline theme assets.
+In Become a Legend, **Player Menu → Prologue** appears in the Player Info dropdown when `Prologue.exe` is installed in `SiderAddons\PrologueCompanion`, `SiderAddons\Prologue`, `SiderAddons\TouchlineCompanion`, or directly in `SiderAddons`. The two apps are separate installations. The Classic preview uses the English Touchline theme assets.
 
 The installer prints the backup folder. To restore the previous installation, close the game and Sider, then run this from PowerShell in the extracted package.
 

@@ -1,8 +1,10 @@
 -- Adds the companion app shortcut to each career menu.
-local m = {version="0.1.2"}
+local m = {version="0.1.3"}
 local classic = true
 local k, user, shell, base
 local ready, apps = {}, {}
+local career, classic_visual
+local visual_request="common\\menu\\general\\modemainmenufl.bin"
 local function number(value) return tonumber(ffi.cast("uintptr_t", value)) end
 local function ptr(value) return ffi.cast("void *", value) end
 local function u64(address) return tonumber(memory.unpack("u64", memory.read(address, 8))) end
@@ -35,6 +37,11 @@ local model_specs = {
     ml = {table=40561416, original={12086880,12085808,12086848,12087232}, identity=106},
     bal = {table=40612184, original={12314752,12314624,12086848,12087232}, identity=111},
 }
+local function menu_rows(ids)
+    local bytes={}
+    for i=1,11 do bytes[i]=memory.pack("u32",ids[i] or 0) end
+    return table.concat(bytes)
+end
 local function mount_models()
     for mode, spec in pairs(model_specs) do
         if apps[mode] then
@@ -67,19 +74,32 @@ end
 local function mount(mode)
     local app = apps[mode]
     if ready[mode] or not app then return end
-    local system, event
-    local expected
+    local system, event, submenu, expected, submenu_rows
     if mode=="ml" then
         system, event = base+0x26AE3E8, base+0x26AE928
         expected={8,64,65,66,106,67,classic and 0 or 2,0,0,0,0}
+        if classic then
+            submenu=base+0x26AE390
+            submenu_rows={5,59,50,46,49,47,57}
+        end
     else
         system, event = base+0x26BAC68, base+0x26BAF78
         expected={8,64,65,105,67,110,classic and 0 or 2,0,0,0,0}
+        if classic then
+            -- 108 is the native BAL Player Menu category.
+            submenu=base+0x26BABB8
+            submenu_rows={108,59,98,19,22,23,99}
+        end
     end
-    local pieces={}
-    for _, id in ipairs(expected) do pieces[#pieces+1]=memory.pack("u32",id) end
-    local before=table.concat(pieces)
+    local before=menu_rows(expected)
     if memory.read(system,#before) ~= before then return end
+    local submenu_before,submenu_after
+    if submenu then
+        submenu_before=menu_rows(submenu_rows)
+        if memory.read(submenu,#submenu_before) ~= submenu_before then return end
+        submenu_rows[8]=model_specs[mode].identity
+        submenu_after=menu_rows(submenu_rows)
+    end
     local original=u64(event)
     if (original==base+0xCD3BF0)~=classic then return end
     local code=decode("5356574883ec504889cf4889d64885d20f8409010000817a08007008010f85fc000000488b4a104839f90f841600000048398f480700000f85e20000004885c90f84d900000048b80d00111111110000ffd089c3488b87400700004885c00f84bb000000488b40104885c00f84ae000000488b4820482b481848c1e9034839cb0f8399000000488b4018488b04d883386f0f858800000031c948ba080011111111000048b80900111111110000ffd04885c00f842b0000004889c34889c1ba0900000048b80a00111111110000ffd04889d948b80b00111111110000ffd0e93400000031c931d249b806001111111100004531c948b807001111111100004889442420c74424280100000048b80c00111111110000ffd04883c4505f5e5bc34889f94889f24883c4505f5e5b48b80400111111110000ffe0")
@@ -93,24 +113,58 @@ local function mount(mode)
     for index,value in pairs(values) do code=relocate(code,index,value) end
     local address=allocate(code)
     if not address then return end
-    if mode=="bal" then expected[classic and 7 or 8]=111 end
-    pieces={}
-    for _,id in ipairs(expected) do pieces[#pieces+1]=memory.pack("u32",id) end
+    if mode=="bal" and not classic then expected[8]=111 end
+    if mode=="ml" and classic then expected[5],expected[6]=67,0 end
     if not protect_write(event,memory.pack("u64",address)) then return end
-    if mode=="bal" and not protect_write(system,table.concat(pieces)) then
+    local system_after=menu_rows(expected)
+    if (system_after~=before and not protect_write(system,system_after))
+        or (submenu and not protect_write(submenu,submenu_after)) then
+        if submenu then protect_write(submenu,submenu_before) end
+        if system_after~=before then protect_write(system,before) end
         protect_write(event,memory.pack("u64",original))
         return
     end
     ready[mode]=true
     log("TOUCHLINE LAUNCHER ready in "..mode)
 end
-function m.get_filepath(ctx, filename)
+local function track_flow(ctx, filename)
     if type(filename)~="string" then return end
     local name=filename:lower():gsub("/","\\")
-    if name=="common\\script\\flow\\ml\\mlmainmanu.json" then mount("ml")
-    elseif name=="common\\script\\flow\\bl\\blmainmenu.json" then mount("bal") end
+    if name=="common\\script\\flow\\ml\\mlmainmanu.json" then
+        career="ml"
+        mount("ml")
+    elseif name=="common\\script\\flow\\bl\\blmainmenu.json" then
+        career="bal"
+        mount("bal")
+    elseif name:find("common\\script\\flow\\topmenu\\",1,true)==1
+        or name:find("common\\script\\flow\\league\\",1,true)==1
+        or name:find("common\\script\\flow\\compe\\",1,true)==1 then
+        career=nil
+    end
+    return name
+end
+function m.get_filepath(ctx, filename)
+    if track_flow(ctx,filename)==visual_request and career then return classic_visual end
+end
+function m.make_key(ctx, filename)
+    local path=m.get_filepath(ctx,filename)
+    if path then return "touchline-classic:"..path end
+end
+function m.data_ready(ctx, filename)
+    track_flow(ctx,filename)
 end
 function m.init(ctx)
+    if classic then
+        local path=(ctx.sider_dir or "").."modules\\TouchlineClassicML.bin"
+        local visual=io.open(path,"rb")
+        if visual then
+            visual:close()
+            classic_visual=path
+        end
+        ctx.register("livecpk_make_key",m.make_key)
+    end
+    ctx.register("livecpk_get_filepath",m.get_filepath)
+    ctx.register("livecpk_data_ready",m.data_ready)
     if not ffi then log("TOUCHLINE LAUNCHER needs LuaJIT extensions");return end
     ffi.cdef[[
         void * __stdcall GetModuleHandleA(const char *);
@@ -182,9 +236,8 @@ function m.init(ctx)
     else
         apps.bal=apps.ml
     end
-    if (not apps.ml and not apps.bal) or not mount_models() then return end
-    ctx.register("livecpk_get_filepath",m.get_filepath)
-    ctx.register("livecpk_data_ready",m.get_filepath)
+    if not apps.ml and not apps.bal then return end
+    if not mount_models() then apps={}; return end
     log("TOUCHLINE LAUNCHER initialized")
 end
 return m

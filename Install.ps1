@@ -15,6 +15,7 @@ $classic = $manifest.edition -eq 'classic'
 $modulePayload=@(
     'modules/TouchlineMenuColors.lua',
     'modules/TouchlineClassicLauncher.lua',
+    'modules/TouchlineClassicML.bin',
     'modules/TouchlineMLDashboard.lua',
     'modules/TouchlineMLDashboard/MLMainManu.json',
     'modules/TouchlineMLDashboard/MLRestoreBackground.json',
