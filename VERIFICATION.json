@@ -1,8 +1,8 @@
 {
-  "version": "2.2.3",
+  "version": "2.2.4",
   "target_game": "SP Football Life 2027",
-  "date": "2026-11-17",
-  "source_release": "Touchline Menu FL 2027 2.2.2 and Touchline career dashboards 1.2.33",
+  "date": "2026-11-19",
+  "source_release": "Touchline Menu FL 2027 2.2.3 and Touchline career dashboard companion preview 1.2.34",
   "executable": {
     "file_version": "27.0.0.0",
     "installed_game_version": "27.1.0",
@@ -66,12 +66,11 @@
     "all_other_records_byte_exact": true
   },
   "dashboard": {
-    "version": "1.2.33",
+    "version": "1.2.34",
     "sider_version_tested": "7.3.3",
-    "mock_runtime_executable_reads": 109,
+    "mock_runtime_executable_reads": 112,
     "master_league_time_advance": "Emulated Play Match with match-day action enabled, disabled or absent, including an unavailable Next action and a rejected native transition",
     "master_league_transfer_deadline": "Emulated the native countdown route with Play Match available and unavailable, a rejected transition, and normal match and Next routes when the countdown was unavailable",
-    "installed_payload_files_matching_release": 164,
     "live_checks": [
       "FC Lorient Master League dashboard and Yoann Gourcuff name with crown",
       "Play Match opened Transfer Deadline Day in a 31 August Palermo career and the player confirmed they could continue on dashboard 1.2.33",
@@ -80,7 +79,9 @@
       "Play Match, Skip Match, Coach Mode and Favourite Players shortcut on prior dashboard builds",
       "Stock Become a Legend navigation and subsequent Master League entry on dashboard 1.2.21"
     ],
-    "screenshot": "docs/images/master-league-dashboard.jpg"
+    "screenshot": "docs/images/master-league-dashboard.jpg (2.2.3 layout)",
+    "master_league_season_rollover": "Emulated Go to Next Season when available, with match, deadline and ordinary Next routes also checked.",
+    "companion_tile": "Live local preview confirmed that the Touchline app opens and FL 2027 stays responsive."
   },
   "become_a_legend": {
     "asset_and_emulated_routes": "passed",
@@ -103,6 +104,11 @@
     "skip_match_focus": "Directional routes tested in emulation and Standings-style focus pulse confirmed in game",
     "time_advance": "Emulated Next Match with the match-day action enabled, disabled or absent, including an unavailable Next action and a rejected native transition. Verified the explicit Skip Match action with its own availability check.",
     "live_time_advance": "Next Match advanced a BAL save on a day without a fixture on dashboard 1.2.32",
-    "screenshot": "docs/images/become-a-legend-dashboard.jpg"
+    "screenshot": "docs/images/become-a-legend-dashboard.jpg (2.2.3 layout)",
+    "companion_tile": "Placement, launcher dispatch and controller routes passed in emulation."
+  },
+  "localized_previews": {
+    "es": "Dashboard assets, localized labels and routing passed in emulation.",
+    "fr": "Dashboard assets, localized labels and routing passed in emulation."
   }
 }

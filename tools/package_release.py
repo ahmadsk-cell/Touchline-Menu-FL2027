@@ -41,7 +41,9 @@ def classic_strings(source):
 
 ROOT=Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
-parser.add_argument('--classic', action='store_true', help='Package the Classic edition.')
+edition = parser.add_mutually_exclusive_group()
+edition.add_argument('--classic', action='store_true', help='Package the Classic edition.')
+edition.add_argument('--locale', choices=('es', 'fr'), help='Package a localized dashboard.')
 args = parser.parse_args()
 manifest=json.loads((ROOT/'manifest.json').read_text())
 english_strings = 'livecpk/TouchlinePrologue2/eng/string/all.str'
@@ -55,12 +57,26 @@ if args.classic:
                                   'sha256': hashlib.sha256(asset.read_bytes()).hexdigest(),
                                   'size': asset.stat().st_size})
 files=[]
+localized = {}
 for entry in manifest['files']:
     p=(ROOT/entry['path']).resolve()
     assert p.is_relative_to(ROOT),entry['path']
     assert p.is_file() and hashlib.sha256(p.read_bytes()).hexdigest()==entry['sha256'],entry['path']
     assert p.stat().st_size==entry['size'],entry['path']
     files.append(p)
+if args.locale:
+    locale_root = ROOT/'locales'/args.locale
+    names = (
+        'livecpk/TouchlinePrologue2/common/menu/general/topModeSelectDMM.bin',
+        'modules/TouchlineMLDashboard.lua',
+        'modules/TouchlineMLDashboard/modeMainMenuFl.bin',
+        'modules/TouchlineMLDashboard/modeMainMenuBAL.bin',
+    )
+    localized = {name: (locale_root/Path(name).name).read_bytes() for name in names}
+    for entry in manifest['files']:
+        data = localized.get(entry['path'])
+        if data is not None:
+            entry.update(sha256=hashlib.sha256(data).hexdigest(), size=len(data))
 for name in ['README.md','CREDITS.md','CHANGELOG.md','Install.cmd','Install.ps1','Uninstall.ps1','manifest.json','VERIFICATION.json','DEPENDENCY-AUDIT.json']:
     files.append(ROOT/name)
 files.extend(ROOT/name for name in ['docs/compatibility-fl2027.md','docs/FL2026-VERIFICATION.json'])
@@ -76,10 +92,20 @@ if args.classic:
     translated = classic_strings((ROOT/english_strings).read_bytes())
     entry = next(item for item in manifest['files'] if item['path']==english_strings)
     entry.update(sha256=hashlib.sha256(translated).hexdigest(),size=len(translated))
+elif args.locale:
+    out=out.with_name(f'{out.stem}-{args.locale}-preview.zip')
+    guidance = {
+        'es': 'Selecciona **Español** como idioma del texto en los ajustes del juego.\n\n',
+        'fr': 'Sélectionnez **Français** comme langue des textes dans les paramètres du jeu.\n\n',
+    }
+    localized['README.md'] = guidance[args.locale].encode('utf-8') + (ROOT/'README.md').read_bytes()
 with ZipFile(out,'w',ZIP_DEFLATED,compresslevel=6) as z:
     for p in sorted(files):
-        if args.classic and p.name=='manifest.json':
+        relative = p.relative_to(ROOT).as_posix()
+        if (args.classic or args.locale) and relative=='manifest.json':
             z.writestr('manifest.json', json.dumps(manifest,indent=2)+'\n')
+        elif relative in localized:
+            z.writestr(relative, localized[relative])
         elif args.classic and p.name=='README.md':
             z.write(ROOT/'docs/classic-edition.md','README.md')
         elif args.classic and p.name=='VERIFICATION.json':
@@ -93,7 +119,8 @@ with ZipFile(out) as z:
     for entry in manifest['files']:
         assert hashlib.sha256(z.read(entry['path'])).hexdigest()==entry['sha256']
 checksum=hashlib.sha256(out.read_bytes()).hexdigest()
-sums_name = 'SHA256SUMS-classic-midnight-preview.txt' if args.classic else 'SHA256SUMS.txt'
+sums_name = ('SHA256SUMS-classic-midnight-preview.txt' if args.classic else
+             f'SHA256SUMS-{args.locale}-preview.txt' if args.locale else 'SHA256SUMS.txt')
 (dist/sums_name).write_text(f'{checksum}  {out.name}\n',encoding='ascii')
 print(f'{out.name}: {out.stat().st_size:,} bytes; {len(manifest["files"])} verified payload files')
 print(f'SHA-256: {checksum}')

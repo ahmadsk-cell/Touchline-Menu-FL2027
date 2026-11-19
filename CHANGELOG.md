@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.2.4 — FL 2027
+
+- Added the slim Touchline launcher to Master League and the matching Prologue launcher to Become a Legend. Each uses its separately installed companion app.
+- Widened the Master League news panel and improved controller movement between the top tabs and dashboard cards.
+- Added the native Go to Next Season action to Play Match when the game enables it and there is no active transfer deadline or playable fixture.
+- Updated the English release and Spanish and French previews.
+
 ## 2.2.3 — FL 2027
 
 - In Master League, Play Match opens the game's Transfer Deadline Day screen when the Forward Time menu enables it. Verified in a 31 August save.
