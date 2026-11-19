@@ -39,11 +39,58 @@ def classic_strings(source):
     compressed = zlib.compress(data,9)
     return source[:8]+struct.pack('<II',len(compressed),len(data))+compressed
 
+
+def localized_strings(source, replacements):
+    """Replace approved records while retaining all other stock strings."""
+    original = unpack(source)
+    count, table = struct.unpack_from('<II', original)
+    groups = [struct.unpack_from('<III', original, table + i * 12) for i in range(count)]
+    before = records(original)
+    expected = {}
+    by_group = {}
+    for group, key, english, translated in replacements:
+        assert (group, key) not in expected
+        assert before[group, key][1] == english.encode('ascii') + b'\0', (group, key, english)
+        replacement = translated.encode('ascii') + b'\0'
+        expected[group, key] = (len(replacement) - 1, replacement)
+        by_group.setdefault(group, {})[key] = replacement
+
+    data = bytearray()
+    previous_end = 0
+    directory = []
+    for start, size, group in groups:
+        assert start >= previous_end, group
+        data.extend(original[previous_end:start])
+        offset = len(data)
+        bank = bytearray(original[start:start + size])
+        if group in by_group:
+            entries = struct.unpack_from('<I', bank)[0]
+            for index in range(entries):
+                record = 8 + 12 * index
+                key = struct.unpack_from('<I', bank, record)[0]
+                replacement = by_group[group].get(key)
+                if replacement is not None:
+                    struct.pack_into('<HHI', bank, record + 4, len(replacement), len(replacement) - 1, len(bank))
+                    bank.extend(replacement)
+        data.extend(bank)
+        # Preserve the alignment of every group that follows this bank.
+        data.extend(bytes((size - len(bank)) % 16))
+        directory.append((offset, len(bank), group))
+        previous_end = start + size
+    data.extend(original[previous_end:])
+    for index, entry in enumerate(directory):
+        struct.pack_into('<III', data, table + index * 12, *entry)
+    assert records(data) == before | expected
+    compressed = zlib.compress(data, 9)
+    return source[:8] + struct.pack('<II', len(compressed), len(data)) + compressed
+
+
 ROOT=Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
 edition = parser.add_mutually_exclusive_group()
 edition.add_argument('--classic', action='store_true', help='Package the Classic edition.')
-edition.add_argument('--locale', choices=('es', 'fr', 'ar', 'it', 'pt-br'), help='Package a localized dashboard.')
+edition.add_argument('--locale', choices=('es', 'fr', 'ar', 'it', 'pt-br', 'ru', 'id'),
+                     help='Package a localized dashboard.')
 args = parser.parse_args()
 manifest=json.loads((ROOT/'manifest.json').read_text())
 english_strings = 'livecpk/TouchlinePrologue2/eng/string/all.str'
@@ -56,8 +103,8 @@ if args.classic:
         manifest['files'].append({'path': relative,
                                   'sha256': hashlib.sha256(asset.read_bytes()).hexdigest(),
                                   'size': asset.stat().st_size})
-if args.locale == 'ar':
-    # Let the native Arabic renderer use the game's own text fonts. Known
+if args.locale in ('ar', 'ru'):
+    # Let the native Arabic and Russian renderers use the game's own text fonts. Known
     # Touchline overrides are backed up and removed when upgrading.
     stock_text_fonts = {
         'LPsm_fnt.bin', 'XLPsm_fnt.bin', 'matchBold_fnt.bin',
@@ -86,6 +133,9 @@ if args.locale:
         'modules/TouchlineMLDashboard/modeMainMenuBAL.bin',
     )
     localized = {name: (locale_root/Path(name).name).read_bytes() for name in names}
+    if args.locale == 'id':
+        overrides = json.loads((locale_root/'english-labels.json').read_text(encoding='utf-8'))
+        localized[english_strings] = localized_strings((ROOT/english_strings).read_bytes(), overrides)
     for entry in manifest['files']:
         data = localized.get(entry['path'])
         if data is not None:
@@ -126,6 +176,24 @@ elif args.locale:
             'Para desinstalar, feche o jogo e o Sider e siga as [instruções de restauração]'
             '(#restore-the-previous-setup).\n\n'
         ),
+        'ru': (
+            '# Touchline Menu — Русская версия (предварительная)\n\n'
+            'Закройте FL 2027 и Sider. Полностью распакуйте ZIP, запустите **Install.cmd** '
+            'и выберите папку **SiderAddons** с файлом `sider.ini`. Запустите игру '
+            'и выберите **Русский** в настройках языка текста.\n\n'
+            'Для удаления закройте игру и Sider, затем следуйте [инструкции по восстановлению]'
+            '(#restore-the-previous-setup).\n\n'
+        ),
+        'id': (
+            '# Touchline Menu — Pratinjau Bahasa Indonesia\n\n'
+            'Tutup FL 2027 dan Sider. Ekstrak seluruh isi ZIP, jalankan **Install.cmd**, '
+            'lalu pilih folder **SiderAddons** yang berisi `sider.ini`. Setelah memulai game, '
+            'pilih **English** sebagai bahasa teks.\n\n'
+            'Pratinjau ini menerjemahkan menu utama Touchline, dasbor Liga Master dan Jadi Legenda, '
+            'serta beberapa label bawaan. Dialog dan teks game lainnya tetap berbahasa Inggris.\n\n'
+            'Untuk menghapus mod, tutup game dan Sider, lalu ikuti [petunjuk pemulihan]'
+            '(#restore-the-previous-setup).\n\n'
+        ),
         'ar': (
             '# Touchline Menu — النسخة العربية التجريبية\n\n'
             'أغلق اللعبة وبرنامج Sider، ثم فك ضغط الملف بالكامل وشغّل **Install.cmd**. '
@@ -138,16 +206,21 @@ elif args.locale:
         ),
     }
     readme = (ROOT/'README.md').read_text(encoding='utf-8')
-    language = {'ar': 'العربية', 'it': 'Italiano', 'pt-br': 'Português do Brasil'}.get(args.locale)
-    if language:
+    locale_details = {
+        'ar': ('العربية', 'arabic', 'Stock Arabic localization and text fonts'),
+        'it': ('Italiano', 'italian', 'Stock game localization for built-in dialogs and submenus'),
+        'pt-br': ('Português do Brasil', 'brazilian_portuguese', 'Stock game localization for built-in dialogs and submenus'),
+        'ru': ('Русский', 'russian', 'Stock Russian localization and text fonts'),
+        'id': ('English', 'indonesian', 'Selected labels in the English language slot'),
+    }
+    if args.locale in locale_details:
+        language, name, game_text = locale_details[args.locale]
         readme = readme.replace('English game text. This package includes an English string-table override.',
                                 f'Select **{language}** in the game’s text language settings.')
         verification = json.loads((ROOT/'VERIFICATION.json').read_text(encoding='utf-8'))
-        verification[{'ar': 'arabic_preview', 'it': 'italian_preview',
-                      'pt-br': 'brazilian_portuguese_preview'}[args.locale]] = {
+        verification[f'{name}_preview'] = {
             'artwork': 'Seven main menu scenes and both career dashboards',
-            'game_text': ('Stock Arabic localization and text fonts' if args.locale == 'ar'
-                          else 'Stock game localization for built-in dialogs and submenus'),
+            'game_text': game_text,
             'routing': 'Passed simulated Sider checks with the FL 2027 executable',
             'in_game_rendering': 'Pending',
         }
