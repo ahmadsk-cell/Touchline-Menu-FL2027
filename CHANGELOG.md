@@ -6,6 +6,7 @@
 - Widened the Master League news panel and improved controller movement between the top tabs and dashboard cards.
 - Added the native Go to Next Season action to Play Match when the game enables it and there is no active transfer deadline or playable fixture.
 - Updated the English release and Spanish and French previews.
+- Added an Arabic preview for the main menu, Master League, and Become a Legend.
 
 ## 2.2.3 — FL 2027
 

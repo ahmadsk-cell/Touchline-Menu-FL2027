@@ -41,7 +41,7 @@ Touchline and Prologue gameplay and story systems are separate projects. No exte
 ## Installation
 
 1. Close Football Life and Sider.
-2. Download the English, Spanish, or French **v2.2.4** ZIP from [GitHub Releases](https://github.com/ahmadsk-cell/Touchline-Menu-FL2027/releases/latest) and extract it completely. For a localized preview, select the matching text language in the game.
+2. Download the English, Spanish, French, or Arabic **v2.2.4** ZIP from [GitHub Releases](https://github.com/ahmadsk-cell/Touchline-Menu-FL2027/releases/latest) and extract it completely. For a localized preview, select the matching text language in the game. The Arabic preview uses the game's Arabic text fonts.
 3. Double-click **Install.cmd** and enter the full path to your **SiderAddons** folder, the folder containing `sider.ini`.
 4. Start Sider and Football Life again.
 

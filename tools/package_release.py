@@ -43,7 +43,7 @@ ROOT=Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
 edition = parser.add_mutually_exclusive_group()
 edition.add_argument('--classic', action='store_true', help='Package the Classic edition.')
-edition.add_argument('--locale', choices=('es', 'fr'), help='Package a localized dashboard.')
+edition.add_argument('--locale', choices=('es', 'fr', 'ar'), help='Package a localized dashboard.')
 args = parser.parse_args()
 manifest=json.loads((ROOT/'manifest.json').read_text())
 english_strings = 'livecpk/TouchlinePrologue2/eng/string/all.str'
@@ -56,6 +56,19 @@ if args.classic:
         manifest['files'].append({'path': relative,
                                   'sha256': hashlib.sha256(asset.read_bytes()).hexdigest(),
                                   'size': asset.stat().st_size})
+if args.locale == 'ar':
+    # Let the native Arabic renderer use the game's own text fonts. Known
+    # Touchline overrides are backed up and removed when upgrading.
+    stock_text_fonts = {
+        'LPsm_fnt.bin', 'XLPsm_fnt.bin', 'matchBold_fnt.bin',
+        'match_fnt.bin', 'pes_fnt.bin', 'plname_fnt.bin',
+    }
+    overrides = [entry for entry in manifest['files']
+                 if Path(entry['path']).name in stock_text_fonts]
+    assert {Path(entry['path']).name for entry in overrides} == stock_text_fonts
+    for entry in overrides:
+        manifest['retired'].append({'path': entry['path'], 'known_sha256': [entry['sha256']]})
+    manifest['files'] = [entry for entry in manifest['files'] if entry not in overrides]
 files=[]
 localized = {}
 for entry in manifest['files']:
@@ -97,8 +110,30 @@ elif args.locale:
     guidance = {
         'es': 'Selecciona **Español** como idioma del texto en los ajustes del juego.\n\n',
         'fr': 'Sélectionnez **Français** comme langue des textes dans les paramètres du jeu.\n\n',
+        'ar': (
+            '# Touchline Menu — النسخة العربية التجريبية\n\n'
+            'أغلق اللعبة وبرنامج Sider، ثم فك ضغط الملف بالكامل وشغّل **Install.cmd**. '
+            'اختر مجلد **SiderAddons** الذي يحتوي على ملف `sider.ini`. '
+            'بعد تشغيل اللعبة، اختر **العربية** كلغة للنص من إعدادات اللغة.\n\n'
+            'تتضمن هذه النسخة القوائم الرئيسية ولوحتي الدوري الاحترافي وكن أسطورة باللغة العربية. '
+            'تستخدم القوائم والحوارات الأصلية ترجمة اللعبة وخطوطها.\n\n'
+            'لإلغاء التثبيت، أغلق اللعبة وبرنامج Sider واستخدم **Uninstall.ps1** مع مجلد **SiderAddons** '
+            'ومسار النسخة الاحتياطية الذي عرضه المثبّت. [خطوات الاستعادة](#restore-the-previous-setup).\n\n'
+        ),
     }
-    localized['README.md'] = guidance[args.locale].encode('utf-8') + (ROOT/'README.md').read_bytes()
+    readme = (ROOT/'README.md').read_text(encoding='utf-8')
+    if args.locale == 'ar':
+        readme = readme.replace('English game text. This package includes an English string-table override.',
+                                'Arabic game text. Select **العربية** in the game’s text language settings.')
+        verification = json.loads((ROOT/'VERIFICATION.json').read_text(encoding='utf-8'))
+        verification['arabic_preview'] = {
+            'artwork': 'Seven main menu scenes and both career dashboards',
+            'game_text': 'Stock Arabic localization and text fonts',
+            'routing': 'Passed simulated Sider checks with the FL 2027 executable',
+            'in_game_rendering': 'Pending',
+        }
+        localized['VERIFICATION.json'] = (json.dumps(verification, indent=2)+'\n').encode('utf-8')
+    localized['README.md'] = (guidance[args.locale] + readme).encode('utf-8')
 with ZipFile(out,'w',ZIP_DEFLATED,compresslevel=6) as z:
     for p in sorted(files):
         relative = p.relative_to(ROOT).as_posix()
