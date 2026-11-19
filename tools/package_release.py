@@ -43,7 +43,7 @@ ROOT=Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
 edition = parser.add_mutually_exclusive_group()
 edition.add_argument('--classic', action='store_true', help='Package the Classic edition.')
-edition.add_argument('--locale', choices=('es', 'fr', 'ar'), help='Package a localized dashboard.')
+edition.add_argument('--locale', choices=('es', 'fr', 'ar', 'it', 'pt-br'), help='Package a localized dashboard.')
 args = parser.parse_args()
 manifest=json.loads((ROOT/'manifest.json').read_text())
 english_strings = 'livecpk/TouchlinePrologue2/eng/string/all.str'
@@ -110,6 +110,22 @@ elif args.locale:
     guidance = {
         'es': 'Selecciona **Español** como idioma del texto en los ajustes del juego.\n\n',
         'fr': 'Sélectionnez **Français** comme langue des textes dans les paramètres du jeu.\n\n',
+        'it': (
+            '# Touchline Menu — Anteprima italiana\n\n'
+            'Chiudi FL 2027 e Sider. Estrai tutto il contenuto dello ZIP, avvia **Install.cmd** '
+            'e seleziona la cartella **SiderAddons** che contiene `sider.ini`. Avvia il gioco '
+            'e imposta **Italiano** come lingua dei testi.\n\n'
+            'Per disinstallare, chiudi il gioco e Sider e segui le [istruzioni di ripristino]'
+            '(#restore-the-previous-setup).\n\n'
+        ),
+        'pt-br': (
+            '# Touchline Menu — Prévia em português do Brasil\n\n'
+            'Feche o FL 2027 e o Sider. Extraia todo o conteúdo do ZIP, execute **Install.cmd** '
+            'e selecione a pasta **SiderAddons** que contém o arquivo `sider.ini`. Inicie o jogo '
+            'e selecione **Português do Brasil** como idioma dos textos.\n\n'
+            'Para desinstalar, feche o jogo e o Sider e siga as [instruções de restauração]'
+            '(#restore-the-previous-setup).\n\n'
+        ),
         'ar': (
             '# Touchline Menu — النسخة العربية التجريبية\n\n'
             'أغلق اللعبة وبرنامج Sider، ثم فك ضغط الملف بالكامل وشغّل **Install.cmd**. '
@@ -122,13 +138,16 @@ elif args.locale:
         ),
     }
     readme = (ROOT/'README.md').read_text(encoding='utf-8')
-    if args.locale == 'ar':
+    language = {'ar': 'العربية', 'it': 'Italiano', 'pt-br': 'Português do Brasil'}.get(args.locale)
+    if language:
         readme = readme.replace('English game text. This package includes an English string-table override.',
-                                'Arabic game text. Select **العربية** in the game’s text language settings.')
+                                f'Select **{language}** in the game’s text language settings.')
         verification = json.loads((ROOT/'VERIFICATION.json').read_text(encoding='utf-8'))
-        verification['arabic_preview'] = {
+        verification[{'ar': 'arabic_preview', 'it': 'italian_preview',
+                      'pt-br': 'brazilian_portuguese_preview'}[args.locale]] = {
             'artwork': 'Seven main menu scenes and both career dashboards',
-            'game_text': 'Stock Arabic localization and text fonts',
+            'game_text': ('Stock Arabic localization and text fonts' if args.locale == 'ar'
+                          else 'Stock game localization for built-in dialogs and submenus'),
             'routing': 'Passed simulated Sider checks with the FL 2027 executable',
             'in_game_rendering': 'Pending',
         }
