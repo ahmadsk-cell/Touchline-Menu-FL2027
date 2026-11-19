@@ -7,6 +7,7 @@
 - Added the native Go to Next Season action to Play Match when the game enables it and there is no active transfer deadline or playable fixture.
 - Updated the English release and Spanish and French previews.
 - Added Arabic, Italian, Brazilian Portuguese, Russian, and Indonesian previews for the main menu, Master League, and Become a Legend. The Indonesian preview uses the English text language setting.
+- Added a gold focus highlight to the Classic Midnight career tabs.
 
 ## 2.2.3 — FL 2027
 

@@ -1,6 +1,6 @@
 # Touchline Menu Classic for FL 2027
 
-Classic uses the original Master League and Become a Legend menus, navigation, and actions with Midnight navy panels, platinum borders, champagne accents, and the club’s own crest in the header and Followers panel. It also includes the Touchline main menu and shared theme.
+Classic uses the original Master League and Become a Legend menus, navigation, and actions with Midnight navy panels, platinum borders, champagne accents, and the club’s own crest in the header and Followers panel. The focused top tab turns gold as you move across the header. It also includes the Touchline main menu and shared theme.
 
 Close Football Life and Sider, extract the complete Classic ZIP, and run **Install.cmd**. Enter the full path to the **SiderAddons** folder that contains `sider.ini`. Start the game through your usual FL 2027 shortcut. Classic is a complete theme package and can replace an existing Touchline dashboard installation.
 
