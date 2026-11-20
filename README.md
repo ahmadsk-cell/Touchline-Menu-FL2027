@@ -12,7 +12,7 @@ A standalone charcoal, silver and champagne menu mod for **SP Football Life 2027
 
 ## Included
 
-The optional Classic preview gives the original Master League and Become a Legend menus a Midnight navy theme with white header text, a gold highlight on the focused tab, and platinum borders. In Master League, **Manager’s Office → Touchline** opens the Touchline companion app. In Become a Legend, **Player Menu → Prologue** opens the Prologue companion app. [Download Classic Midnight](https://github.com/ahmadsk-cell/Touchline-Menu-FL2027/releases/download/v2.2.4/Touchline-Menu-FL2027-v2.2.4-classic-midnight-preview.zip) · [Classic installation and uninstall](docs/classic-edition.md)
+The optional Classic preview gives the original Master League and Become a Legend menus a Midnight navy theme with white header text, a gold highlight on the focused tab, and platinum borders. In Master League, **Manager’s Office → Touchline** opens the Touchline companion app. In Become a Legend, **Player Menu → Prologue** opens the Prologue companion app. [Download Classic Midnight](https://github.com/ahmadsk-cell/Touchline-Menu-FL2027/releases/download/v2.2.5/Touchline-Menu-FL2027-v2.2.5-classic-midnight-preview.zip) · [Classic installation and uninstall](docs/classic-edition.md)
 
 - Master League dashboard with six tabs, aligned dropdowns, Play Match, Skip Match, Coach Mode, a five-day fixture calendar, standings, top scorers and live news.
 - Career cards for the highest observed transfer fee in the active window, training, notifications, youth, followers and Favourite Players. The Favourite Players card shows the selected player’s name and opens the native list.
@@ -41,7 +41,7 @@ Touchline and Prologue gameplay and story systems are separate projects. No exte
 ## Installation
 
 1. Close Football Life and Sider.
-2. Download the **v2.2.4** ZIP for your language from [GitHub Releases](https://github.com/ahmadsk-cell/Touchline-Menu-FL2027/releases/latest) and extract it completely. For a localized preview, select the matching in-game text language. For **Bahasa Indonesia**, select **English**. That preview translates the Touchline screens and selected stock menu labels. Other game text remains English. The Arabic, Russian, and Turkish previews use the game's original text fonts.
+2. Download the **v2.2.5** ZIP for your language from [GitHub Releases](https://github.com/ahmadsk-cell/Touchline-Menu-FL2027/releases/latest) and extract it completely. For a localized preview, select the matching in-game text language. For **Bahasa Indonesia**, select **English**. That preview translates the Touchline screens and selected stock menu labels. Other game text remains English. The Arabic, Russian, and Turkish previews use the game's original text fonts.
 3. Double-click **Install.cmd** and enter the full path to your **SiderAddons** folder, the folder containing `sider.ini`.
 4. Start Sider and Football Life again.
 

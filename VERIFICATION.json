@@ -1,7 +1,7 @@
 {
-  "version": "2.2.4",
+  "version": "2.2.5",
   "target_game": "SP Football Life 2027",
-  "date": "2026-11-19",
+  "date": "2026-11-20",
   "source_release": "Touchline Menu FL 2027 2.2.3 and Touchline career dashboard companion preview 1.2.34",
   "executable": {
     "file_version": "27.0.0.0",
@@ -84,6 +84,12 @@
     "companion_tile": "Live local preview confirmed that the Touchline app opens and FL 2027 stays responsive."
   },
   "become_a_legend": {
+    "header_contrast_fix": {
+      "editions": ["en", "es", "fr", "ar", "it", "pt-br", "ru", "id", "tr"],
+      "asset_checks": "Both club-color states use white labels, and the focus timeline and unread markers use gold.",
+      "simulated_sider_routing": "Passed for every dashboard edition.",
+      "live_check": "Pending for the 2.2.5 dashboard header."
+    },
     "asset_and_emulated_routes": "passed",
     "in_game_rendering": "Dashboard 1.2.29 loaded successfully in FL 2027",
     "verified_native_routes": [

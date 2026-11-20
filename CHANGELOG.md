@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.2.5 — FL 2027
+
+- Fixed black Become a Legend tab labels on light club colors. Tabs use white text and the focused tab turns gold in every dashboard language pack.
+- Restored the visibility of unread notification dots on the Become a Legend header.
+- Included the existing English Classic Midnight edition in the release.
+
 ## 2.2.4 — FL 2027
 
 - Added the slim Touchline launcher to Master League and the matching Prologue launcher to Become a Legend. Each uses its separately installed companion app.
