@@ -89,7 +89,7 @@ ROOT=Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser(description=__doc__)
 edition = parser.add_mutually_exclusive_group()
 edition.add_argument('--classic', action='store_true', help='Package the Classic edition.')
-edition.add_argument('--locale', choices=('es', 'fr', 'ar', 'it', 'pt-br', 'ru', 'id'),
+edition.add_argument('--locale', choices=('es', 'fr', 'ar', 'it', 'pt-br', 'ru', 'id', 'tr'),
                      help='Package a localized dashboard.')
 args = parser.parse_args()
 manifest=json.loads((ROOT/'manifest.json').read_text())
@@ -103,8 +103,8 @@ if args.classic:
         manifest['files'].append({'path': relative,
                                   'sha256': hashlib.sha256(asset.read_bytes()).hexdigest(),
                                   'size': asset.stat().st_size})
-if args.locale in ('ar', 'ru'):
-    # Let the native Arabic and Russian renderers use the game's own text fonts. Known
+if args.locale in ('ar', 'ru', 'tr'):
+    # Let these locales render native text using the game's own fonts. Known
     # Touchline overrides are backed up and removed when upgrading.
     stock_text_fonts = {
         'LPsm_fnt.bin', 'XLPsm_fnt.bin', 'matchBold_fnt.bin',
@@ -194,6 +194,14 @@ elif args.locale:
             'Untuk menghapus mod, tutup game dan Sider, lalu ikuti [petunjuk pemulihan]'
             '(#restore-the-previous-setup).\n\n'
         ),
+        'tr': (
+            '# Touchline Menu — Türkçe önizleme\n\n'
+            'FL 2027 ve Sider’ı kapatın. ZIP dosyasının tamamını çıkarın, **Install.cmd** dosyasını '
+            'çalıştırın ve `sider.ini` dosyasını içeren **SiderAddons** klasörünü seçin. Oyunu başlatın '
+            've metin dili olarak **Türkçe** seçin.\n\n'
+            'Modu kaldırmak için oyunu ve Sider’ı kapatıp [geri yükleme adımlarını]'
+            '(#restore-the-previous-setup) izleyin.\n\n'
+        ),
         'ar': (
             '# Touchline Menu — النسخة العربية التجريبية\n\n'
             'أغلق اللعبة وبرنامج Sider، ثم فك ضغط الملف بالكامل وشغّل **Install.cmd**. '
@@ -212,6 +220,7 @@ elif args.locale:
         'pt-br': ('Português do Brasil', 'brazilian_portuguese', 'Stock game localization for built-in dialogs and submenus'),
         'ru': ('Русский', 'russian', 'Stock Russian localization and text fonts'),
         'id': ('English', 'indonesian', 'Selected labels in the English language slot'),
+        'tr': ('Türkçe', 'turkish', 'Stock Turkish localization and text fonts'),
     }
     if args.locale in locale_details:
         language, name, game_text = locale_details[args.locale]
